@@ -4,8 +4,8 @@ from sys import argv, exit
 from math import sqrt
 
 ###
-save = False
-title = ''
+save = True
+title = 'error_classes/shattered_glass'
 ###
 
 def split_two(num):
@@ -45,7 +45,7 @@ for j in range(y):
 		diff = np.abs(golden[:,:,i + j*x] - faulty[:,:,i + j*x])
 
 		diff = np.where(diff < 1e-3, 0, 1)
-
+		print(diff)
 		axs[i, j].imshow(diff, cmap='hot', interpolation='nearest')
 		axs[i, j].set_yticks([])
 		axs[i, j].set_xticks([])
