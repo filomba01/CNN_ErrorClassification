@@ -4,7 +4,7 @@ from sys import argv, exit
 from math import sqrt
 
 ###
-save = True
+save = False
 title = 'error_classes/shattered_glass/0'
 
 
@@ -55,6 +55,12 @@ counter = 0
 foundBroken = False
 ### i suppose that can be a same row
 isSameRow = True
+
+# saving coordinates for checking eventually bullet wake
+coordinates = [0, 0]
+selectedSquare = False
+bulletWake = False
+
 for j in range(y):
     for i in range(x):
         diff = np.abs(golden[:, :, i + j * x] - faulty[:, :, i + j * x])
@@ -75,14 +81,23 @@ for j in range(y):
                 isSameRow = check_is_same_row(diff, diff.shape[0], diff.shape[1])
             else:
                 isSameRow = False
+        # bullet wake
+        if np.count_nonzero(diff == 1):
+            if not selectedSquare:
+                selectedSquare = True
+                bulletWake = True
+                coordinates = [i, j]
+            if [i, j] != coordinates:
+                bulletWake = False
 
-print(counter)
 tensor_name = argv[2].split('/')[-1].split('.')[0]
-# if the result contains only one error is a single point!
+### if the result contains only one error is a single point!
 if counter == 1:
-    title = 'error_classes/single_point/' + tensor_name
+    title = 'error_classes/single_point' + tensor_name
 elif isSameRow:
     title = 'error_classes/same_row/' + tensor_name
+elif (bulletWake) and (counter > 1):
+    title = 'error_classes/bullet_wake/' + tensor_name
 else:
     title = 'error_classes/undefined_error/' + tensor_name
 
