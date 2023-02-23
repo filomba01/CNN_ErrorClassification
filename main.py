@@ -87,7 +87,7 @@ for j in range(y):
                 selectedSquare = True
                 bulletWake = True
                 coordinates = [i, j]
-            if [i, j] != coordinates:
+            if ([i, j] != coordinates) and (bulletWake == True):
                 bulletWake = False
 
 tensor_name = argv[2].split('/')[-1].split('.')[0]
