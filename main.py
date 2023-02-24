@@ -4,8 +4,8 @@ from sys import argv, exit
 from math import sqrt
 
 ###
-save = False
-title = 'error_classes/shattered_glass/0'
+save = True
+title = ''
 
 
 ###
@@ -41,6 +41,21 @@ def check_is_same_row(matrix, r, c):
                     row2Check = i
                 elif row2Check != i:
                     return False
+    return True
+
+
+def assign_coordinates(matrix, r, c):
+    for i in range(r):
+        for j in range(c):
+            if diff[i][j] == 1:
+                return [i, j]
+
+
+def check_bullet_wake(matrix, r, c, coordinates):
+    for i in range(r):
+        for j in range(c):
+            if (diff[i, j] == 1) and (coordinates != [i, j]):
+                return False
     return True
 
 
@@ -86,11 +101,11 @@ for j in range(y):
             if not selectedSquare:
                 selectedSquare = True
                 bulletWake = True
-                coordinates = [i, j]
-            if ([i, j] != coordinates) and (bulletWake == True):
-                bulletWake = False
+                coordinates = assign_coordinates(diff, diff.shape[0], diff.shape[1])
+            bulletWake = check_bullet_wake(diff, diff.shape[0], diff.shape[1], coordinates)
 
 tensor_name = argv[2].split('/')[-1].split('.')[0]
+print(counter)
 ### if the result contains only one error is a single point!
 if counter == 1:
     title = 'error_classes/single_point' + tensor_name
