@@ -4,7 +4,7 @@ from sys import argv, exit
 from math import sqrt
 
 ###
-save = True
+save = False
 title = ''
 
 
@@ -58,6 +58,15 @@ def check_bullet_wake(matrix, r, c, coordinates):
                 return False
     return True
 
+def check_shatterd_glass(matrix,r,c,coordinates):
+    [x,y] = coordinates
+    for i in range(r):
+        for j in range(c):
+            if([i,j] == coordinates) and (diff[i,j] != 1) and np.count_nonzero(matrix) > 0:
+                return False
+            elif(diff[i,j] == 1) and (i!=x):
+                return False
+    return True
 
 golden = np.load(argv[1])[0, ...]
 faulty = np.load(argv[2])[0, ...]
@@ -75,6 +84,12 @@ isSameRow = True
 coordinates = [0, 0]
 selectedSquare = False
 bulletWake = False
+
+shatteredGlass = False
+stillOk = True
+
+# bullet = 0, shattered = 1
+bulletOrShattered = 0
 
 for j in range(y):
     for i in range(x):
@@ -103,16 +118,35 @@ for j in range(y):
                 bulletWake = True
                 coordinates = assign_coordinates(diff, diff.shape[0], diff.shape[1])
             bulletWake = check_bullet_wake(diff, diff.shape[0], diff.shape[1], coordinates)
+        # shattered glass
+        if(np.count_nonzero(diff == 1)) and stillOk:
+            shatteredGlass = check_shatterd_glass(diff, diff.shape[0], diff.shape[1], coordinates)
+            if not shatteredGlass:
+                stillOk = False
+        # bullet or shattered ? ...
+        if((np.count_nonzero(diff == 1)) > 1) and shatteredGlass and not bulletOrShattered:
+            bulletOrShattered = 1
+# ... bullet or shattered ?
+if not bulletOrShattered and bulletWake:
+    shatteredGlass = False
+# same row is a type of shattered but we want to split the cases
+if isSameRow:
+    shatteredGlass = False
+# single point imples not bullet or samerow
+if counter == 1:
+    isSameRow = False
+    bulletWake = False
 
 tensor_name = argv[2].split('/')[-1].split('.')[0]
-print(counter)
-### if the result contains only one error is a single point!
+
 if counter == 1:
     title = 'error_classes/single_point' + tensor_name
 elif isSameRow:
     title = 'error_classes/same_row/' + tensor_name
-elif (bulletWake) and (counter > 1):
+elif bulletWake and (counter > 1):
     title = 'error_classes/bullet_wake/' + tensor_name
+elif shatteredGlass:
+    title = 'error_classes/shatterd_glass/' + tensor_name
 else:
     title = 'error_classes/undefined_error/' + tensor_name
 
