@@ -72,7 +72,7 @@ def check_shatterd_glass(matrix, r, c, coordinates):
 
 
 golden = np.load(argv[1])[0, ...]
-path = r"C:\Users\matte\PycharmProjects\CNN_ErrorClassification-main\\tensors_corrupted"
+path = r"C:\Users\matte\PycharmProjects\pythonProject\tensors_corrupted"
 os.chdir(path)
 for file in os.listdir():
     if file.endswith(".npy"):
@@ -152,15 +152,15 @@ for file in os.listdir():
         tensor_name = file_path.split('.')[0].split("\\")[-1]
 
         if counter == 1:
-            title = r'C:\Users\matte\PycharmProjects\CNN_ErrorClassification-main\\error_classes\single_point\\' + tensor_name
+            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\single_point\\' + tensor_name
         elif isSameRow:
-            title = r'C:\Users\matte\PycharmProjects\CNN_ErrorClassification-main\\error_classes\same_row\\' + tensor_name
+            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\same_row\\' + tensor_name
         elif bulletWake and (counter > 1):
-            title = r'C:\Users\matte\PycharmProjects\CNN_ErrorClassification-main\\error_classes\bullet_wake\\' + tensor_name
+            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\bullet_wake\\' + tensor_name
         elif shatteredGlass:
-            title = r'C:\Users\matte\PycharmProjects\CNN_ErrorClassification-main\\error_classes\shattered_glass\\' + tensor_name
+            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\shattered_glass\\' + tensor_name
         else:
-            title = r'C:\Users\matte\PycharmProjects\CNN_ErrorClassification-main\\error_classes\undefined_error\\' + tensor_name
+            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\undefined_error\\' + tensor_name
         if save:
             plt.savefig(title)
         else:
