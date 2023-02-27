@@ -144,8 +144,11 @@ for file in os.listdir():
             isSameRow = False
             bulletWake = False
 
-        # tensor_name = argv[2].split('/')[-1].split('.')[0]
-        # tensor_name = argv[2].split('.')[0].split("\\")[-1]
+        # from the line command 1)Linux 2)Windows
+        # 1) tensor_name = argv[2].split('/')[-1].split('.')[0]
+        # 2) tensor_name = argv[2].split('.')[0].split("\\")[-1]
+
+        # directly from the directory corrupted_tensors
         tensor_name = file_path.split('.')[0].split("\\")[-1]
 
         if counter == 1:
