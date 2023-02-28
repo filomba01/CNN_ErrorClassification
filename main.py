@@ -91,9 +91,10 @@ for file in os.listdir():
         coordinates = [0, 0]
         selectedSquare = False
         bulletWake = False
+        stillOk_bullet = True
 
         shatteredGlass = False
-        stillOk = True
+        stillOk_shattered = True
 
         # bullet = 0, shattered = 1
         bulletOrShattered = 0
@@ -124,12 +125,15 @@ for file in os.listdir():
                         selectedSquare = True
                         bulletWake = True
                         coordinates = assign_coordinates(diff, diff.shape[0], diff.shape[1])
-                    bulletWake = check_bullet_wake(diff, diff.shape[0], diff.shape[1], coordinates)
+                    if stillOk_bullet:
+                        bulletWake = check_bullet_wake(diff, diff.shape[0], diff.shape[1], coordinates)
+                        if not bulletWake:
+                            stillOk_bullet = False
                 # shattered glass
-                if (np.count_nonzero(diff == 1)) and stillOk:
+                if (np.count_nonzero(diff == 1)) and stillOk_shattered:
                     shatteredGlass = check_shatterd_glass(diff, diff.shape[0], diff.shape[1], coordinates)
                     if not shatteredGlass:
-                        stillOk = False
+                        stillOk_shattered = False
                 # bullet or shattered ? ...
                 if ((np.count_nonzero(diff == 1)) > 1) and shatteredGlass and not bulletOrShattered:
                     bulletOrShattered = 1
@@ -139,7 +143,7 @@ for file in os.listdir():
         # same row is a type of shattered but we want to split the cases
         if isSameRow:
             shatteredGlass = False
-        # single point imples not bullet or samerow
+        # single point implies not bullet or same_row
         if counter == 1:
             isSameRow = False
             bulletWake = False
