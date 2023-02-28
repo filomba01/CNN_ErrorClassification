@@ -137,15 +137,16 @@ for file in os.listdir():
                         if not bulletWake:
                             stillOk_bullet = False
                 # shattered glass
-                if (np.count_nonzero(diff == 1)) and stillOk_shattered:
+                if (np.count_nonzero(diff == 1) > 1 ) and stillOk_shattered:
                     shatteredGlass = check_shatterd_glass(diff, diff.shape[0], diff.shape[1], coordinates)
                     if not shatteredGlass:
                         stillOk_shattered = False
-                # bullet or shattered ? ...
-                if ((np.count_nonzero(diff == 1)) > 1) and shatteredGlass and not bulletOrShattered:
-                    bulletOrShattered = 1
+                # if matrix has more than one error it cannot be bullet
+                if (np.count_nonzero(diff == 1)) > 1:
+                    stillOk_bullet = False
+                    bulletWake = False
         # ... bullet or shattered ?
-        if not bulletOrShattered and bulletWake:
+        if bulletWake:
             shatteredGlass = False
         # same row is a type of shattered but we want to split the cases
         if isSameRow:
