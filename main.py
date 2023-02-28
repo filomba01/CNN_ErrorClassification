@@ -1,3 +1,4 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sys import argv, exit
@@ -72,11 +73,17 @@ def check_shatterd_glass(matrix, r, c, coordinates):
 
 
 golden = np.load(argv[1])[0, ...]
-path = r"C:\Users\matte\PycharmProjects\pythonProject\tensors_corrupted"
+if len(os.path.abspath(__file__).split('/')) > 1:
+    separator = '/';
+else:
+    separator = '\\';
+filename = os.path.abspath(__file__).split(separator)[-1]
+os.path.abspath(__file__).replace(filename, '')
+path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'
 os.chdir(path)
 for file in os.listdir():
     if file.endswith(".npy"):
-        file_path = f"{path}\{file}"
+        file_path = path + separator + file
         faulty = np.load(file_path)[0, ...]
         channels = golden.shape[2]
         x, y = split_two(channels)
@@ -153,19 +160,24 @@ for file in os.listdir():
         # 2) tensor_name = argv[2].split('.')[0].split("\\")[-1]
 
         # directly from the directory corrupted_tensors
-        tensor_name = file_path.split('.')[0].split("\\")[-1]
-
-        if counter == 1:
-            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\single_point\\' + tensor_name
-        elif isSameRow:
-            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\same_row\\' + tensor_name
-        elif bulletWake and (counter > 1):
-            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\bullet_wake\\' + tensor_name
-        elif shatteredGlass:
-            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\shattered_glass\\' + tensor_name
+        if separator == '/':
+            tensor_name = file_path.split('/')[-1].split('.')[0]
         else:
-            title = r'C:\Users\matte\PycharmProjects\pythonProject\\error_classes\undefined_error\\' + tensor_name
+            tensor_name = file_path.split('.')[0].split("\\")[-1]
+        path2err =  os.path.abspath(__file__).replace(filename, '') + 'error_classes' + separator
+        if counter == 1:
+            title = path2err + 'single_point' + separator + tensor_name
+        elif isSameRow:
+            title = path2err + 'same_row' + separator + tensor_name
+        elif bulletWake and (counter > 1):
+            title = path2err + 'bullet_wake' + separator + tensor_name
+        elif shatteredGlass:
+            title = path2err + 'shattered_glass' + separator + tensor_name
+        else:
+            title = path2err + 'undefined_error' + separator + tensor_name
+
         if save:
             plt.savefig(title)
         else:
             plt.show()
+        plt.close()
