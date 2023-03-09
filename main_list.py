@@ -12,6 +12,7 @@ DEPTH = 2
 CHANNEL = 3
 # end def
 
+PLOT = False
 save = True
 # title = ''
 
@@ -93,22 +94,23 @@ for file in os.listdir():
         if not atLeastBullet:
             shatteredGlass = False
 
-        # print
-        faulty = np.load(file_path)[0,...]
-        channels = golden.shape[2]
-        x, y = split_two(channels)
-        fig, axs = plt.subplots(x, y)
-        for j in range(y):
-            for i in range(x):
-                diff = np.abs(golden[:, :, i + j * x] - faulty[:, :, i + j * x])
-                diff = np.where(diff < 1e-3, 0, 1)
-                axs[i, j].imshow(diff, cmap='hot', interpolation='nearest')
-                axs[i, j].set_yticks([])
-                axs[i, j].set_xticks([])
-                axs[i, j].set_yticklabels([])
-                axs[i, j].set_xticklabels([])
-                axs[i, j].set_title(f'Channel {i + j * x}', fontsize=8)
-        # end print
+        if PLOT :
+            # print
+            faulty = np.load(file_path)[0,...]
+            channels = golden.shape[2]
+            x, y = split_two(channels)
+            fig, axs = plt.subplots(x, y)
+            for j in range(y):
+                for i in range(x):
+                    diff = np.abs(golden[:, :, i + j * x] - faulty[:, :, i + j * x])
+                    diff = np.where(diff < 1e-3, 0, 1)
+                    axs[i, j].imshow(diff, cmap='hot', interpolation='nearest')
+                    axs[i, j].set_yticks([])
+                    axs[i, j].set_xticks([])
+                    axs[i, j].set_yticklabels([])
+                    axs[i, j].set_xticklabels([])
+                    axs[i, j].set_title(f'Channel {i + j * x}', fontsize=8)
+            # end print
 
         # from the line command 1)Linux 2)Windows
         # 1) tensor_name = argv[2].split('/')[-1].split('.')[0]
