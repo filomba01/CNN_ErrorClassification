@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/.idea/pythonProject.iml" filepath="$PROJECT_DIR$/.idea/pythonProject.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/CNN_Errors_C.iml" filepath="$PROJECT_DIR$/.idea/CNN_Errors_C.iml" />
+>>>>>>> 37d43106adbdf3a20419e38f5317392cc57aef08
+    </modules>
+  </component>
+</project>
