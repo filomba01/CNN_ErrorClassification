@@ -62,7 +62,7 @@ for file in os.listdir():
 
         # diff cube generation
 
-        a = np.abs(golden - faulty)
+
         diff_cube = np.where(golden - faulty)
         temp = [(diff_cube[j][i]) for i in range(len(diff_cube[0])) for j in range(len(diff_cube))]
         diff_cube = [tuple(temp[n:n + len(diff_cube)]) for n in range(0, len(temp), len(diff_cube))]
@@ -84,9 +84,6 @@ for file in os.listdir():
                     axs[i, j].set_title(f'Channel {i + j * x}', fontsize=8)
             # end print
 
-        print(diff_cube)
-        print(len(diff_cube))
-
         # single point
         if len(diff_cube) > 1:
             firstChannel = -1
@@ -102,11 +99,14 @@ for file in os.listdir():
                     # same row conditions
                     if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference or diff_cube[k][CHANNEL] != firstChannel:
                         sameRow = False
+                    # shatteredGlass conditions
                     elif diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:
                         shatteredGlass = False
+                    # bulletWake conditions
                     elif diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference or diff_cube[k][DEPTH] != dReference:
                         bulletWake = False
 
+                    # adjusting the right classification
                     if sameRow:
                         shatteredGlass = False
                         bulletWake = False
@@ -140,4 +140,4 @@ for file in os.listdir():
             plt.close()
         else:
             print(title)
-        #plt.close()
+
