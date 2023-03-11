@@ -15,5 +15,3 @@ The currently error classes in analysis are:
 As it can be seen in the code, all the error classes are supposed to be true at the beginning, the approach of this classification is to individuate if exists a single element which does not respect the specific rule of an error class, in order to exclude that class from the possible ones.
 This approach make more simple to identify the right classification for each tensor.
 
-### Notes
-Currently, the best implementation is stored in _main_list.py_
