@@ -133,8 +133,8 @@ for file in os.listdir():
         else:
             title = path2err + 'undefined_error' + separator + tensor_name
 
-        if save:
+        if PLOT:
             plt.savefig(title)
         else:
-            plt.show()
+            print(title)
         plt.close()
