@@ -1,6 +1,6 @@
 # CNN Error Classificator for CLASSES
 The aim of this project is to automatize error patterns classifications based on the descriptions made in "Fast and Accurate Error Simulation for CNNs against Soft Errors" in order to implement it in CLASSES.
-Code is written by Matteo Bettiati and Filippo Balzarini from Politecnico of Milano.
+Code is written by Matteo Bettiati ([@matteobettiati](https://github.com/matteobettiati)) and Filippo Balzarini ([@filomba01](https://github.com/filomba01)) from ([Politecnico di Milano] (https://polimi.it)).
 
 ### About the Project
 Analysis starts with the comparison between the curropted tensor matrix and the golden one, the _diff\_cube_ result represent the field of the matrix where an error occured because of the corrupted tensor injection in the CNN, the program is be able to automatically divide different errors into proper error class.
