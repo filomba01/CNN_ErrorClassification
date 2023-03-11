@@ -14,6 +14,8 @@ CHANNEL = 3
 
 PLOT = False
 save = True
+
+
 # title = ''
 
 
@@ -65,38 +67,52 @@ for file in os.listdir():
         temp = [(diff_cube[j][i]) for i in range(len(diff_cube[0])) for j in range(len(diff_cube))]
         diff_cube = [tuple(temp[n:n + len(diff_cube)]) for n in range(0, len(temp), len(diff_cube))]
 
+        diff_cube = sorted(diff_cube, key=lambda x: x[3])
         # errors
-        if (size(diff_cube)/4) > 1:
+        if (size(diff_cube) / 4) > 1:
             singlePoint = False
         rReference = diff_cube[0][ROW]
         cReference = diff_cube[0][COLUMN]
         dReference = diff_cube[0][DEPTH]
         chReference = diff_cube[0][CHANNEL]
-        Range = int(size(diff_cube)/4)
+        lastChSeen = chReference
+        Range = int(size(diff_cube) / 4)
         atLeastBullet = False
-        for k in range (1,Range):
-            # same row conditions
-            if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference or diff_cube[k][CHANNEL] != chReference:
-                isSameRow = False
-            # shatteredGlass conditions
-            if diff_cube[k][DEPTH] == dReference:
+        for k in range(1, Range):
+            # check if exists an element that ensures that the error can be atLeastBullet
+            if diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] == dReference and not atLeastBullet:
                 atLeastBullet = True
-            elif diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:
+
+            #  common conditions
+            if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:
+                isSameRow = False
                 shatteredGlass = False
                 bulletWake = False
-            # bulletWake conditions
-            elif diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] != dReference:
+
+            # same row conditions
+            if diff_cube[k][CHANNEL] != chReference:
+                isSameRow = False
+
+            # bulletWake condition
+            if diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] != dReference:
                 bulletWake = False
 
+            # triggers after the complete analysis of one channel
+            if lastChSeen != diff_cube[k][CHANNEL]:
+                lastChSeen = diff_cube[k][CHANNEL]
+                if not atLeastBullet:
+                    bulletWake = False
+                    shatteredGlass = False
+                else:
+                    atLeastBullet = False
         # adjusting the right classification
         if bulletWake:
             shatteredGlass = False
-        if not atLeastBullet:
-            shatteredGlass = False
 
-        if PLOT :
+
+        if PLOT:
             # print
-            faulty = np.load(file_path)[0,...]
+            faulty = np.load(file_path)[0, ...]
             channels = golden.shape[2]
             x, y = split_two(channels)
             fig, axs = plt.subplots(x, y)
@@ -121,7 +137,7 @@ for file in os.listdir():
             tensor_name = file_path.split('/')[-1].split('.')[0]
         else:
             tensor_name = file_path.split('.')[0].split("\\")[-1]
-        path2err =  os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes' + separator
+        path2err = os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes' + separator
         if len(diff_cube) == 1:
             title = path2err + 'single_point' + separator + tensor_name
         elif isSameRow:
@@ -137,4 +153,5 @@ for file in os.listdir():
             plt.savefig(title)
         else:
             print(title)
+            plt.savefig(title)
         plt.close()
