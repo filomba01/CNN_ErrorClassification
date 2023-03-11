@@ -17,13 +17,7 @@ This approach make more simple to identify the right classification for each ten
 
 All the errors are compared with a **row referece**, a **column reference** and a **channel reference** choosen from the first error position.
 
-`if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference or diff_cube[k][CHANNEL] != chReference:`
-is the condition that identify an error in a different row in reletion to the error reference
-
-`elif diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:`
-can identify an error which beside to a different row, but not necessary in a different channel, this condition is enought for conclude that the error cannot be a shattered glass, either bullet wake
-
-`elif diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] != dReference:`
-this condition finds out errors in positions which are different from the error reference, that make it possible to exclude the bullet wake ipothesis from the classification
-
+### notes
+* AtLeast Bullet: because by definition a shattered_glass error must be at least bullet, this boolean controls this condition.
+* Lastchseen: is a support variable that helps to analise bullet_wake and shattered_glass errors channel through channel.  
 
