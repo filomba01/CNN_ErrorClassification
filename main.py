@@ -12,7 +12,7 @@ DEPTH = 2
 CHANNEL = 3
 # end def
 
-PLOT = False
+PLOT = True
 save = True
 
 
