@@ -5,12 +5,17 @@ from math import sqrt
 import os
 from numpy import size
 
+#initialize the dictonary that will be used as hashmap
+CoordinatesMap = {}
+
 # defines list's indexes
 ROW = 0
 COLUMN = 1
 DEPTH = 2
 CHANNEL = 3
 # end def
+
+
 
 if len(os.path.abspath(__file__).split('/')) > 1:
     separator = '/'
@@ -25,6 +30,8 @@ path = path + separator + choosenTestFolder
 golden = np.load(path+'/output_1.npy')
 #print(golden)
 os.chdir(path + separator + choosenTensorsF + separator)
+
+
 
 for file in os.listdir():
     if file.endswith(".npy"):
@@ -45,22 +52,33 @@ for file in os.listdir():
         diff_cube = [tuple(temp[n:n + len(diff_cube)]) for n in range(0, len(temp), len(diff_cube))]
 
         diff_cube = sorted(diff_cube, key=lambda x: x[3])
-        print(diff_cube)
-        # errors
+        Range = int(size(diff_cube) / 4)
+
+        CoordinatesMap.clear()
+        # initialize the map
+        for k in range(0, Range):
+            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
+            key = key.rstrip(key[-1])
+            CoordinatesMap[key] = 0
+
+        print("initialized coordinates: ")
+        print(CoordinatesMap)
+            # errors
         if (size(diff_cube) / 4) > 1:
             singlePoint = False
             rReference = diff_cube[0][ROW]
             cReference = diff_cube[0][COLUMN]
-            dReference = diff_cube[0][DEPTH]
-            chReference = diff_cube[0][CHANNEL]
-            lastChSeen = chReference
-            Range = int(size(diff_cube) / 4)
-            print(Range)
+            channelRef = diff_cube[0][CHANNEL]
+            nChannel = 1
+            actualChannel = channelRef
             atLeastBullet = False
-            for k in range(1, Range):
-                # check if exists an element that ensures that the error can be atLeastBullet
-                if diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] == dReference and not atLeastBullet:
-                    atLeastBullet = True
+            for k in range(0, Range):
+
+                # handle key creation, without assign the channel
+                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
+                key = key.rstrip(key[-1])
+                CoordinatesMap[key] += 1
+
 
                 #  common conditions
                 if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:
@@ -68,23 +86,31 @@ for file in os.listdir():
                     shatteredGlass = False
                     bulletWake = False
 
-                # same row conditions
-                if diff_cube[k][CHANNEL] != chReference:
+                if diff_cube[k][CHANNEL] != channelRef:
                     isSameRow = False
 
-                # bulletWake condition
-                if diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] != dReference:
+                # count channels
+                if diff_cube[k][CHANNEL] != actualChannel:
+                    actualChannel = diff_cube[k][CHANNEL]
+                    nChannel+=1
+            # end for
+            print("final coordinates count: ")
+            print(CoordinatesMap)
+            print("number of channels")
+            print(nChannel)
+            if shatteredGlass:
+                for key in CoordinatesMap:
+                  if CoordinatesMap[key]== nChannel:
+                      atLeastBullet = True
+
+                  if CoordinatesMap[key] > 1 and CoordinatesMap[key]< nChannel:
+                      bulletWake = False
+
+               # adjusting the right classification
+                if not atLeastBullet:
+                    shatteredGlass = False
                     bulletWake = False
 
-                # triggers after the complete analysis of one channel
-                if lastChSeen != diff_cube[k][CHANNEL]:
-                    lastChSeen = diff_cube[k][CHANNEL]
-                    if not atLeastBullet:
-                        bulletWake = False
-                        shatteredGlass = False
-                    else:
-                        atLeastBullet = False
-            # adjusting the right classification
             if bulletWake:
                 shatteredGlass = False
 
@@ -115,13 +141,10 @@ for file in os.listdir():
             errorType = 'undefined_error'
             title = path2err + 'undefined_error' + separator
 
-        if PLOT:
-            plt.savefig(title + tensor_name)
-            plt.close()
-        else:
-            print(title+"tensors_"+errorType+".txt")
-            file = open(title+"tensors_"+errorType+".txt", "a")
-            file.write(tensor_name+"\n")
+
+        print(tensor_name + ': '+errorType)
+        file = open(title+"tensors_"+errorType+".txt", "a")
+        file.write(tensor_name+"\n")
 
 
 
