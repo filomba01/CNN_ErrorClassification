@@ -1,11 +1,13 @@
+import os
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sys import argv, exit
 from math import sqrt
 
 ###
-save = False
-title = ''
+save = True
+title = r'C:\Users\matte\PycharmProjects\pythonProject\error_classes\undefined_error'
 
 
 ###
@@ -42,6 +44,20 @@ def is_prime(n):
 golden = np.load(argv[1])[0, ...]
 faulty = np.load(argv[2])[0, ...]
 
+if len(os.path.abspath(__file__).split('/')) > 1:
+    separator = '/'
+else:
+    separator = '\\'
+filename = separator + os.path.abspath(__file__).split(separator)[-1]
+os.path.abspath(__file__).replace(filename, '')
+path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'+separator+'experiments'
+choosenTestFolder = input("Insert the folder: ")
+choosenTensorsF = input("Insert the subfolder: ")
+faultyTensorName = input("Insert the tensor to analyze: ")
+path = path + separator + choosenTestFolder
+golden = np.load(path+ separator +'output_1.npy')[0,...]
+faulty = np.load(path+ separator + choosenTensorsF + separator + faultyTensorName)[0,...]
+
 golden = np.reshape(golden, (13, 13, 256))
 faulty = np.reshape(faulty, (13, 13, 256))
 
@@ -50,7 +66,9 @@ print(golden.shape[0])
 
 x, y = split_two(channels)
 
+
 fig, axs = plt.subplots(x, y)
+
 for j in range(y):
     for i in range(x):
         diff = np.abs(golden[:, :, i + j * x] - faulty[:, :, i + j * x])
@@ -62,7 +80,9 @@ for j in range(y):
         axs[i, j].set_xticks([])
         axs[i, j].set_yticklabels([])
         axs[i, j].set_xticklabels([])
-        axs[i, j].set_title(f'Channel {i + j * x}', fontsize=8)
+        # axs[i, j].set_title(f'Channel {i + j * x}', fontsize=4)
+
+
 
 if save:
     plt.savefig(title)

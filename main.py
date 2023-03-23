@@ -9,10 +9,9 @@ from numpy import size
 CoordinatesMap = {}
 
 # defines list's indexes
-ROW = 0
-COLUMN = 1
-DEPTH = 2
-CHANNEL = 3
+ROW = 1
+COLUMN = 2
+CHANNEL = 0
 # end def
 
 
@@ -27,7 +26,7 @@ path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_co
 choosenTestFolder = input("Insert the folder: ")
 choosenTensorsF = input("Insert the subfolder: ")
 path = path + separator + choosenTestFolder
-golden = np.load(path+'/output_1.npy')
+golden = np.load(path+'/output_1.npy')[0,...]
 #print(golden)
 os.chdir(path + separator + choosenTensorsF + separator)
 
@@ -37,7 +36,7 @@ for file in os.listdir():
     if file.endswith(".npy"):
         file_path = path + separator + choosenTensorsF + separator + file
         #print(file_path)
-        faulty = np.load(file_path)
+        faulty = np.load(file_path)[0,...]
 
         # variables for classification
         singlePoint = True
@@ -51,13 +50,13 @@ for file in os.listdir():
         temp = [(diff_cube[j][i]) for i in range(len(diff_cube[0])) for j in range(len(diff_cube))]
         diff_cube = [tuple(temp[n:n + len(diff_cube)]) for n in range(0, len(temp), len(diff_cube))]
 
-        diff_cube = sorted(diff_cube, key=lambda x: x[3])
-        Range = int(size(diff_cube) / 4)
+        diff_cube = sorted(diff_cube, key=lambda x: x[2])
+        Range = int(size(diff_cube) / 3)
 
         CoordinatesMap.clear()
         # initialize the map
         for k in range(0, Range):
-            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
+            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(1, len(diff_cube[k]) ))
             key = key.rstrip(key[-1])
             CoordinatesMap[key] = 0
 
@@ -74,8 +73,11 @@ for file in os.listdir():
             atLeastBullet = False
             for k in range(0, Range):
 
+                # super pattern
+
+
                 # handle key creation, without assign the channel
-                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
+                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(1, len(diff_cube[k])))
                 key = key.rstrip(key[-1])
                 CoordinatesMap[key] += 1
 
@@ -98,6 +100,7 @@ for file in os.listdir():
             print(CoordinatesMap)
             print("number of channels")
             print(nChannel)
+            print(diff_cube)
             if shatteredGlass:
                 for key in CoordinatesMap:
                   if CoordinatesMap[key]== nChannel:
