@@ -58,5 +58,6 @@ fp32_wrv
 * 
 fp32_ggpr
 * S1I10 : 293 bullet su 293
+
 ld_wzv
 * S1I9 : 500 bullet_wake su 500
