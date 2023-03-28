@@ -18,15 +18,22 @@ This approach make more simple to identify the right classification for each ten
 All the errors are compared with a **row referece**, a **column reference** and a **channel reference** choosen from the first error position.
 
 In order to classify errors in bullet wake and shattered glass classification some useful variables have been used, such as:
-* AtLeast Bullet: because of the definition a shattered_glass error must be at least bullet, this boolean controls this condition.
+* CoordinatesMap: is a dictonary used to store the occurency of the error's coordinates. 
 
 * Lastchseen: is a support variable that helps to analise bullet_wake and shattered_glass errors channel through channel.  
 
 
-The condition below is used to identify if an error in the channel occured at the same position of the reference
+The key for the map dictonary is created as below, the result is a 'row,column' index:
 
-    if diff_cube[k][ROW] == rReference and diff_cube[k][COLUMN] == cReference and diff_cube[k][DEPTH] == dReference and not atLeastBullet:
-        atLeastBullet = True
+    key = ''.join(str(diff_cube[k][x]) + ',' for x in range(1, len(diff_cube[k]) ))
+            key = key.rstrip(key[-1])
+
+In order to ensure that an error could be bullet wake or shattered glass is necessary to find a coordinate that occured as many times as the channel with at least one error
+    
+                if shatteredGlass:
+                    for key in CoordinatesMap:
+                        if CoordinatesMap[key]== nChannel:
+                          atLeastBullet = True
 
 When a channel has been completely analyzed, atLeastBullet flag is checked, if no error in the channel occured in the reference position, it cannot be a shattered glass, neither a bullet wake.
     
