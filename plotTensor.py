@@ -7,7 +7,7 @@ from math import sqrt
 
 ###
 save = True
-title = r'C:\Users\matte\PycharmProjects\pythonProject\error_classes\undefined_error'
+title = r'C:\Users\matte\PycharmProjects\pythonProject\plots\tensor1'
 
 
 ###
@@ -58,8 +58,12 @@ path = path + separator + choosenTestFolder
 golden = np.load(path+ separator +'output_1.npy')[0,...]
 faulty = np.load(path+ separator + choosenTensorsF + separator + faultyTensorName)[0,...]
 
-golden = np.reshape(golden, (13, 13, 256))
-faulty = np.reshape(faulty, (13, 13, 256))
+toInvert = False
+if golden.shape[0] != golden.shape[1]:
+    toInvert = True
+    golden = np.reshape(golden, (golden.shape[2], golden.shape[1], golden.shape[0]))
+if toInvert:
+    faulty = np.reshape(faulty, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
 
 channels = golden.shape[2]
 print(golden.shape[0])
@@ -80,7 +84,7 @@ for j in range(y):
         axs[i, j].set_xticks([])
         axs[i, j].set_yticklabels([])
         axs[i, j].set_xticklabels([])
-        # axs[i, j].set_title(f'Channel {i + j * x}', fontsize=4)
+        axs[i, j].set_title(f' {i + j * x}', fontsize=4)
 
 
 

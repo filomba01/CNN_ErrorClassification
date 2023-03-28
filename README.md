@@ -37,3 +37,19 @@ When a channel has been completely analyzed, atLeastBullet flag is checked, if n
                     shatteredGlass = False
                 else:
                     atLeastBullet = False
+
+
+### Review about latest experiments
+fp32_wzv
+* S1I1 : 1014 undefined_error su 1014
+* S1I2 : 1005 undefined_error su 1005
+* S1I3 : 937 bullet_wake su 937
+* S1I6 : 1852 undefined_error su 1852 
+* S1I8 : 1000 bullet_wake su 1000
+fp32_wrv
+* S1I7 : 1000 bullet_wake su 1000
+* 
+fp32_ggpr
+* S1I10 : 293 bullet su 293
+ld_wzv
+* S1I9 : 500 bullet_wake su 500

@@ -9,9 +9,9 @@ from numpy import size
 CoordinatesMap = {}
 
 # defines list's indexes
-ROW = 1
-COLUMN = 2
-CHANNEL = 0
+ROW = 0
+COLUMN = 1
+CHANNEL = 2
 # end def
 
 
@@ -30,19 +30,30 @@ golden = np.load(path+'/output_1.npy')[0,...]
 #print(golden)
 os.chdir(path + separator + choosenTensorsF + separator)
 
+print(golden.shape)
+toInvert = False
+if golden.shape[0] != golden.shape[1]:
+    toInvert = True
+    golden = np.reshape(golden, (golden.shape[2], golden.shape[1], golden.shape[0]))
 
+print(golden.shape)
 
 for file in os.listdir():
     if file.endswith(".npy"):
         file_path = path + separator + choosenTensorsF + separator + file
         #print(file_path)
         faulty = np.load(file_path)[0,...]
+        print(faulty.shape)
+        if toInvert:
+            faulty = np.reshape(faulty, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
+            print(faulty.shape)
 
         # variables for classification
         singlePoint = True
         isSameRow = True
         bulletWake = True
         shatteredGlass = True
+
 
         # diff cube generation
         diffs = np.abs(golden - faulty)
@@ -56,7 +67,7 @@ for file in os.listdir():
         CoordinatesMap.clear()
         # initialize the map
         for k in range(0, Range):
-            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(1, len(diff_cube[k]) ))
+            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1 ))
             key = key.rstrip(key[-1])
             CoordinatesMap[key] = 0
 
@@ -77,7 +88,7 @@ for file in os.listdir():
 
 
                 # handle key creation, without assign the channel
-                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(1, len(diff_cube[k])))
+                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1 ))
                 key = key.rstrip(key[-1])
                 CoordinatesMap[key] += 1
 
@@ -147,7 +158,7 @@ for file in os.listdir():
 
         print(tensor_name + ': '+errorType)
         file = open(title+"tensors_"+errorType+".txt", "a")
-        file.write(tensor_name+"\n")
+        file.write(choosenTestFolder+': '+tensor_name+"\n")
 
 
 
