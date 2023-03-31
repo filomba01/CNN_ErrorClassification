@@ -50,13 +50,13 @@ else:
     separator = '\\'
 filename = separator + os.path.abspath(__file__).split(separator)[-1]
 os.path.abspath(__file__).replace(filename, '')
-path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'+separator+'experiments'
 choosenTestFolder = input("Insert the folder: ")
 choosenTensorsF = input("Insert the subfolder: ")
 faultyTensorName = input("Insert the tensor to analyze: ")
+path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'+ separator + choosenTestFolder
 path = path + separator + choosenTestFolder
-golden = np.load(path+ separator +'output_1.npy')[0,...]
-faulty = np.load(path+ separator + choosenTensorsF + separator + faultyTensorName)[0,...]
+golden = np.load(path + separator + choosenTensorsF + separator + 'output_1.npy')[0,...]
+faulty = np.load(path + separator + choosenTensorsF + separator + faultyTensorName)[0,...]
 
 toInvert = False
 if golden.shape[0] != golden.shape[1]:

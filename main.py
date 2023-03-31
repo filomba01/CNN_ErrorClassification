@@ -1,11 +1,9 @@
+from folder_and_path_handler import *
 import numpy as np
-
-from sys import argv, exit
-from math import sqrt
 import os
 from numpy import size
 
-#initialize the dictonary that will be used as hashmap
+# initialize the dictonary that will be used as hashmap
 CoordinatesMap = {}
 
 # defines list's indexes
@@ -14,35 +12,15 @@ COLUMN = 1
 CHANNEL = 2
 # end def
 
-
-
-if len(os.path.abspath(__file__).split('/')) > 1:
-    separator = '/'
-else:
-    separator = '\\'
-filename = separator + os.path.abspath(__file__).split(separator)[-1]
-os.path.abspath(__file__).replace(filename, '')
-path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted/experiments'
-choosenTestFolder = input("Insert the folder: ")
-choosenTensorsF = input("Insert the subfolder: ")
-path = path + separator + choosenTestFolder
-golden = np.load(path+'/output_1.npy')[0,...]
-#print(golden)
-os.chdir(path + separator + choosenTensorsF + separator)
-
-print(golden.shape)
-toInvert = False
-if golden.shape[0] != golden.shape[1]:
-    toInvert = True
-    golden = np.reshape(golden, (golden.shape[2], golden.shape[1], golden.shape[0]))
-
-print(golden.shape)
+# counter of tensors
+counter = 0
 
 for file in os.listdir():
     if file.endswith(".npy"):
+        counter += 1
         file_path = path + separator + choosenTensorsF + separator + file
-        #print(file_path)
-        faulty = np.load(file_path)[0,...]
+        # print(file_path)
+        faulty = np.load(file_path)[0, ...]
         print(faulty.shape)
         if toInvert:
             faulty = np.reshape(faulty, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
@@ -53,7 +31,6 @@ for file in os.listdir():
         isSameRow = True
         bulletWake = True
         shatteredGlass = True
-
 
         # diff cube generation
         diffs = np.abs(golden - faulty)
@@ -67,13 +44,13 @@ for file in os.listdir():
         CoordinatesMap.clear()
         # initialize the map
         for k in range(0, Range):
-            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1 ))
+            key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
             key = key.rstrip(key[-1])
             CoordinatesMap[key] = 0
 
         print("initialized coordinates: ")
         print(CoordinatesMap)
-            # errors
+        # errors
         if (size(diff_cube) / 4) > 1:
             singlePoint = False
             rReference = diff_cube[0][ROW]
@@ -86,12 +63,10 @@ for file in os.listdir():
 
                 # super pattern
 
-
                 # handle key creation, without assign the channel
-                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1 ))
+                key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
                 key = key.rstrip(key[-1])
                 CoordinatesMap[key] += 1
-
 
                 #  common conditions
                 if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:
@@ -105,7 +80,7 @@ for file in os.listdir():
                 # count channels
                 if diff_cube[k][CHANNEL] != actualChannel:
                     actualChannel = diff_cube[k][CHANNEL]
-                    nChannel+=1
+                    nChannel += 1
             # end for
             print("final coordinates count: ")
             print(CoordinatesMap)
@@ -114,20 +89,19 @@ for file in os.listdir():
             print(diff_cube)
             if shatteredGlass:
                 for key in CoordinatesMap:
-                  if CoordinatesMap[key]== nChannel:
-                      atLeastBullet = True
+                    if CoordinatesMap[key] == nChannel:
+                        atLeastBullet = True
 
-                  if CoordinatesMap[key] > 1 and CoordinatesMap[key]< nChannel:
-                      bulletWake = False
+                    if CoordinatesMap[key] > 1 and CoordinatesMap[key] < nChannel:
+                        bulletWake = False
 
-               # adjusting the right classification
+                # adjusting the right classification
                 if not atLeastBullet:
                     shatteredGlass = False
                     bulletWake = False
 
             if bulletWake:
                 shatteredGlass = False
-
 
         # from the line command 1)Linux 2)Windows
         # 1) tensor_name = argv[2].split('/')[-1].split('.')[0]
@@ -138,7 +112,7 @@ for file in os.listdir():
             tensor_name = file_path.split('/')[-1].split('.')[0]
         else:
             tensor_name = file_path.split('.')[0].split("\\")[-1]
-        path2err = os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes' + separator
+        path2err = pathToDirectory + separator + choosenTensorsF + separator
         if len(diff_cube) == 1:
             errorType = 'single_point'
             title = path2err + 'single_point' + separator
@@ -155,10 +129,8 @@ for file in os.listdir():
             errorType = 'undefined_error'
             title = path2err + 'undefined_error' + separator
 
+        # print(tensor_name + ': '+errorType)
+        file = open(title + "tensors_" + errorType + ".txt", "a")
+        file.write(tensor_name + "\n")
 
-        print(tensor_name + ': '+errorType)
-        file = open(title+"tensors_"+errorType+".txt", "a")
-        file.write(choosenTestFolder+': '+tensor_name+"\n")
-
-
-
+print("Tensors counted: ", counter)
