@@ -12,10 +12,11 @@ def addToErrorMap(nError,type_of_error,error_class,number_corrupted_tensors):
     else:
         nError[type_of_error][error_class] += number_corrupted_tensors
 def writeErrors(writer, nError, experiment):
-    total_error_number = 0
+
     percResult = []
     for er_t in nError:
-        row2beWritten = ['', '']
+        total_error_number = 0
+        row2beWritten = [experiment, er_t]
         for err in error_classes:
             if err in nError[er_t]:
                 total_error_number += nError[er_t][err]
@@ -23,14 +24,15 @@ def writeErrors(writer, nError, experiment):
             else:
                 row2beWritten.append(0)
 
-        percResult = [experiment, er_t]
+        percResult = ['', '']
         row2beWritten.append(total_error_number)
         for value in row2beWritten:
             if isinstance(value, (int,float)):
                 value = int((int(value)/total_error_number)*100)
                 percResult.append(str(value) + '%')
-        writer.writerow(percResult)
         writer.writerow(row2beWritten)
+        writer.writerow(percResult)
+
 
 def create_csv(start_path, exp):
     nError = {}
