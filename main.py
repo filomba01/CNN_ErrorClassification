@@ -14,6 +14,9 @@ CHANNEL = 2
 # counter of tensors
 counter = 0
 
+#errors list
+error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column']
+
 # for per iterare nella cartella experimant name
 if len(os.path.abspath(__file__).split('/')) > 1:
     separator = '/'
@@ -52,11 +55,9 @@ for conv in os.listdir(directory):
                 os.mkdir(pathToDirectory + experimentPath + separator + choosenTestFolder + separator)
             pathToDirectories = pathToDirectory + experimentPath + separator + choosenTestFolder + separator
             os.mkdir(pathToDirectories + choosenTensorsF)
-            os.mkdir(pathToDirectories + choosenTensorsF + separator + 'single_point')
-            os.mkdir(pathToDirectories + choosenTensorsF + separator + 'same_row')
-            os.mkdir(pathToDirectories + choosenTensorsF + separator + 'bullet_wake')
-            os.mkdir(pathToDirectories + choosenTensorsF + separator + 'shattered_glass')
-            os.mkdir(pathToDirectories + choosenTensorsF + separator + 'undefined_error')
+
+            for error in error_classes:
+                os.mkdir(pathToDirectories + choosenTensorsF + separator + error)
 
             for file in os.listdir():
                 if file.endswith(".npy"):
@@ -74,6 +75,7 @@ for conv in os.listdir(directory):
                     isSameRow = True
                     bulletWake = True
                     shatteredGlass = True
+                    sameColumn = True
 
                     # diff cube generation
                     diffs = np.abs(golden - faulty)
@@ -112,13 +114,17 @@ for conv in os.listdir(directory):
                             CoordinatesMap[key] += 1
 
                             #  common conditions
-                            if diff_cube[k][ROW] != rReference or diff_cube[k][COLUMN] != cReference:
-                                isSameRow = False
+                            if diff_cube[k][ROW] != rReference:
                                 shatteredGlass = False
                                 bulletWake = False
+                                isSameRow = False
+
+                            if diff_cube[k][COLUMN] != cReference:
+                                sameColumn = False
 
                             if diff_cube[k][CHANNEL] != channelRef:
                                 isSameRow = False
+                                sameColumn = False
 
                             # count channels
                             if diff_cube[k][CHANNEL] != actualChannel:
@@ -158,22 +164,26 @@ for conv in os.listdir(directory):
                     path2err = pathToDirectories + separator + choosenTensorsF + separator
                     if len(diff_cube) == 1:
                         errorType = 'single_point'
-                        title = path2err + 'single_point' + separator
+                        title = path2err + errorType + separator
                     elif isSameRow:
                         errorType = 'same_row'
-                        title = path2err + 'same_row' + separator
+                        title = path2err + errorType + separator
                     elif bulletWake and (len(diff_cube) > 1):
                         errorType = 'bullet_wake'
-                        title = path2err + 'bullet_wake' + separator
+                        title = path2err + errorType + separator
                     elif shatteredGlass:
                         errorType = 'shattered_glass'
-                        title = path2err + 'shattered_glass' + separator
+                        title = path2err + errorType + separator
+                    elif sameColumn:
+                        errorType = 'same_column'
+                        title = path2err + errorType + separator
                     else:
                         errorType = 'undefined_error'
-                        title = path2err + 'undefined_error' + separator
+                        title = path2err + errorType + separator
 
                     # print(tensor_name + ': '+errorType)
                     file = open(title + "tensors_" + errorType + ".txt", "a")
                     file.write(tensor_name + "\n")
+                    file.close()
 
             print("Tensors counted: ", counter)
