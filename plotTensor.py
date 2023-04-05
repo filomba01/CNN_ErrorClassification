@@ -6,8 +6,8 @@ from sys import argv, exit
 from math import sqrt
 
 ###
-save = True
-title = r'C:\Users\matte\PycharmProjects\pythonProject\plots\tensor1'
+save = False
+title = ''
 
 
 ###
@@ -50,12 +50,13 @@ else:
     separator = '\\'
 filename = separator + os.path.abspath(__file__).split(separator)[-1]
 os.path.abspath(__file__).replace(filename, '')
+experimentPath = input("Insert the name of the experiment: ")
 choosenTestFolder = input("Insert the folder: ")
 choosenTensorsF = input("Insert the subfolder: ")
 faultyTensorName = input("Insert the tensor to analyze: ")
-path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'+ separator + choosenTestFolder
+path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'+ separator + experimentPath
 path = path + separator + choosenTestFolder
-golden = np.load(path + separator + choosenTensorsF + separator + 'output_1.npy')[0,...]
+golden = np.load(path + separator + 'output_1.npy')[0,...]
 faulty = np.load(path + separator + choosenTensorsF + separator + faultyTensorName)[0,...]
 
 toInvert = False
