@@ -15,7 +15,7 @@ CHANNEL = 2
 counter = 0
 
 #errors list
-error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column','skipX','negligible_error']
+error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column','skipX','NegligibleError']
 
 
 def checkSkipX(flatDiffs):
