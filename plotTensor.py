@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from sys import argv, exit
 from math import sqrt
 
-###
 
+###
 
 
 ###
@@ -39,6 +39,7 @@ def is_prime(n):
             return False
     return True
 
+
 ###
 
 if len(os.path.abspath(__file__).split('/')) > 1:
@@ -50,11 +51,11 @@ save = True
 filename = separator + os.path.abspath(__file__).split(separator)[-1]
 title = os.path.abspath(__file__).replace(filename, '') + separator + 'plotted_tensors'
 
-
 experimentPath = input("Insert the folder of the experiment: ")
 filename = separator + os.path.abspath(__file__).split(separator)[-1]
 os.path.abspath(__file__).replace(filename, '')
-directory = os.path.abspath(__file__).replace(filename,'') + separator + 'tensors_corrupted' + separator + experimentPath
+directory = os.path.abspath(__file__).replace(filename,
+                                              '') + separator + 'tensors_corrupted' + separator + experimentPath
 for conv in os.listdir(directory):
     f = directory + separator + conv
     golden = np.load(directory + separator + conv + separator + 'output_1.npy')[0, ...]
@@ -88,7 +89,7 @@ for conv in os.listdir(directory):
 
                     for j in range(y):
                         for i in range(x):
-                            if  i + j * x < golden.shape[2]:
+                            if i + j * x < golden.shape[2]:
                                 diff = np.abs(golden[:, :, i + j * x] - faulty[:, :, i + j * x])
                                 diff = np.where(diff < 1e-3, 0, 1)
                                 axs[i, j].imshow(diff, cmap='hot', interpolation='nearest')
@@ -99,7 +100,7 @@ for conv in os.listdir(directory):
                                 axs[i, j].set_title(f' {i + j * x}', fontsize=4)
 
                     if save:
-                        plt.savefig(title+ separator + tensor_name.split('.')[0])
+                        plt.savefig(title + separator + tensor_name.split('.')[0])
                     else:
                         plt.show()
                     plt.close()
