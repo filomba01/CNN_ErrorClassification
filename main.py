@@ -37,6 +37,7 @@ for conv in os.listdir(directory):
             choosenTensorsF = tensor
             path = path + separator + choosenTestFolder
             golden = np.load(path + separator + 'output_1.npy')[0, ...]
+
             # print(golden)
             os.chdir(path + separator + choosenTensorsF + separator)
 
@@ -44,8 +45,9 @@ for conv in os.listdir(directory):
             toInvert = False
             if golden.shape[0] != golden.shape[1]:
                 toInvert = True
-                golden = np.reshape(golden, (golden.shape[2], golden.shape[1], golden.shape[0]))
-
+                golden = np.reshape(golden, (golden.shape[1], golden.shape[2], golden.shape[0]))
+            # flattered golden
+            ravelGolden = np.ravel(golden)
             print(golden.shape)
 
             pathToDirectory = os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes' + separator
@@ -65,11 +67,14 @@ for conv in os.listdir(directory):
                     file_path = path + separator + choosenTensorsF + separator + file
                     # print(file_path)
                     faulty = np.load(file_path)[0, ...]
+                    # flattered version of the faulty
+
                     print(faulty.shape)
                     if toInvert:
-                        faulty = np.reshape(faulty, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
+                        faulty = np.reshape(faulty, (faulty.shape[1], faulty.shape[2], faulty.shape[0]))
                         print(faulty.shape)
 
+                    ravelFaulty = np.ravel(faulty)
                     # variables for classification
                     singlePoint = True
                     isSameRow = True
@@ -78,11 +83,15 @@ for conv in os.listdir(directory):
                     sameColumn = True
 
                     # diff cube generation
+                    flattDiffs = np.abs(ravelGolden - ravelFaulty)
+                    print(size(flattDiffs))
+                    flattDiffs = [i for i in range(flattDiffs.shape[0]) if flattDiffs[i] > 1e-3]
+                    print(flattDiffs)
+
                     diffs = np.abs(golden - faulty)
                     diff_cube = np.where(diffs > 1e-3)
                     temp = [(diff_cube[j][i]) for i in range(len(diff_cube[0])) for j in range(len(diff_cube))]
                     diff_cube = [tuple(temp[n:n + len(diff_cube)]) for n in range(0, len(temp), len(diff_cube))]
-
                     diff_cube = sorted(diff_cube, key=lambda x: x[2])
                     Range = int(size(diff_cube) / 3)
 
@@ -135,6 +144,7 @@ for conv in os.listdir(directory):
                         print(CoordinatesMap)
                         print("number of channels")
                         print(nChannel)
+                        print(file)
                         print(diff_cube)
                         if shatteredGlass:
                             for key in CoordinatesMap:
