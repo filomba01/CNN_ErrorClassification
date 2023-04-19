@@ -1,7 +1,7 @@
 import os
 import csv
 
-error_classes = ['bullet_wake', 'same_column', 'same_row', 'shattered_glass', 'single_point', 'undefined_error']
+error_classes = ['bullet_wake', 'same_column', 'same_row', 'shattered_glass', 'single_point', 'skipX','undefined_error','negligible_error']
 
 def addToErrorMap(nError,type_of_error,error_class,number_corrupted_tensors):
     if type_of_error not in nError:

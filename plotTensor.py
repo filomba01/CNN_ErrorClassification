@@ -69,12 +69,12 @@ for conv in os.listdir(directory):
                     toInvert = False
                     if golden.shape[0] != golden.shape[1]:
                         toInvert = True
-                        golden = np.reshape(golden, (golden.shape[2], golden.shape[1], golden.shape[0]))
+                        golden = np.transpose(golden, (1, 2, 0))
 
                     toInvertFaulty = False
                     if faulty.shape[0] != faulty.shape[1]:
                         toInvertFaulty = True
-                        faulty = np.reshape(faulty, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
+                        faulty = np.transpose(faulty, (1, 2, 0))
 
                     channels = golden.shape[2]
 
@@ -91,7 +91,7 @@ for conv in os.listdir(directory):
                         for i in range(x):
                             if i + j * x < golden.shape[2]:
                                 diff = np.abs(golden[:, :, i + j * x] - faulty[:, :, i + j * x])
-                                diff = np.where(diff < 1e-3, 0, 1)
+                                diff = np.where(diff <= 1e-3, 0, 1)
                                 axs[i, j].imshow(diff, cmap='hot', interpolation='nearest')
                                 axs[i, j].set_yticks([])
                                 axs[i, j].set_xticks([])

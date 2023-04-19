@@ -15,7 +15,7 @@ CHANNEL = 2
 counter = 0
 
 #errors list
-error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column','skipX']
+error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column','skipX','negligible_error']
 
 
 def checkSkipX(flatDiffs):
@@ -26,6 +26,12 @@ def checkSkipX(flatDiffs):
         if abs(flatDiffs[i]-flatDiffs[i-1]) != deltaX:
             return False
     return True
+
+def writeOverall( path, errorType,tensor_name ):
+    file = open(path + separator + "tensors_" + errorType + ".txt", "a")
+    file.write(tensor_name + "\n")
+    file.close()
+
 
 # for per iterare nella cartella experimant name
 if len(os.path.abspath(__file__).split('/')) > 1:
@@ -52,12 +58,16 @@ for conv in os.listdir(directory):
             os.chdir(path + separator + choosenTensorsF + separator)
 
             print(golden.shape)
+
+            # flattered golden
+            ravelGolden = np.ravel(golden)
+
             toInvert = False
             if golden.shape[0] != golden.shape[1]:
                 toInvert = True
-                golden = np.reshape(golden, (golden.shape[1], golden.shape[2], golden.shape[0]))
-            # flattered golden
-            ravelGolden = np.ravel(golden)
+                golden = np.transpose(golden, (1, 2, 0))
+                #golden = np.reshape(golden_transposed, (golden.shape[2], golden.shape[1], golden.shape[0]))
+
             print(golden.shape)
 
             pathToDirectory = os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes' + separator
@@ -78,31 +88,39 @@ for conv in os.listdir(directory):
                     # print(file_path)
                     faulty = np.load(file_path)[0, ...]
                     # flattered version of the faulty
+                    ravelFaulty = np.ravel(faulty)
 
                     print(faulty.shape)
                     if toInvert:
-                        faulty = np.reshape(faulty, (faulty.shape[1], faulty.shape[2], faulty.shape[0]))
+                        faulty = np.transpose(faulty, (1, 2, 0))
+                        #faulty = np.reshape(faulty_transposed, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
                         print(faulty.shape)
 
-                    ravelFaulty = np.ravel(faulty)
+
                     # variables for classification
                     singlePoint = True
                     isSameRow = True
                     bulletWake = True
                     shatteredGlass = True
                     sameColumn = True
+                    NegligibleError = False
 
                     # diff cube generation
                     flattDiffs = np.abs(ravelGolden - ravelFaulty)
-                    print(size(flattDiffs))
-                    flattDiffs = [i for i in range(flattDiffs.shape[0]) if flattDiffs[i] > 1e-3]
-                    print(flattDiffs)
+                    flattDiffs = np.where(flattDiffs > 1e-3)
+                    flattDiffs = flattDiffs[0].tolist()
+
 
                     diffs = np.abs(golden - faulty)
                     diff_cube = np.where(diffs > 1e-3)
+
                     temp = [(diff_cube[j][i]) for i in range(len(diff_cube[0])) for j in range(len(diff_cube))]
                     diff_cube = [tuple(temp[n:n + len(diff_cube)]) for n in range(0, len(temp), len(diff_cube))]
                     diff_cube = sorted(diff_cube, key=lambda x: x[2])
+
+                    if size(diff_cube) == 0:
+                        NegligibleError = True
+
                     Range = int(size(diff_cube) / 3)
 
                     CoordinatesMap.clear()
@@ -111,11 +129,19 @@ for conv in os.listdir(directory):
                         key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
                         key = key.rstrip(key[-1])
                         CoordinatesMap[key] = 0
-
+                    print("\n"+file)
                     print("initialized coordinates: ")
                     print(CoordinatesMap)
+
+                    print("flat array: ")
+                    print(size(flattDiffs))
+                    print(flattDiffs)
+
+                    print("3d array:")
+                    print(size(diff_cube))
+                    print(diff_cube)
                     # errors
-                    if (size(diff_cube) / 4) > 1:
+                    if (size(diff_cube) / 3) > 1 and not NegligibleError:
                         singlePoint = False
                         rReference = diff_cube[0][ROW]
                         cReference = diff_cube[0][COLUMN]
@@ -155,7 +181,7 @@ for conv in os.listdir(directory):
                         print(CoordinatesMap)
                         print("number of channels")
                         print(nChannel)
-                        print(file)
+
                         print(diff_cube)
                         if shatteredGlass:
                             for key in CoordinatesMap:
@@ -185,28 +211,30 @@ for conv in os.listdir(directory):
                     else:
                         tensor_name = file_path.split('.')[0].split("\\")[-1]
                     path2err = pathToDirectories + separator + choosenTensorsF + separator
-                    if len(diff_cube) == 1:
+
+
+
+
+
+                    if NegligibleError:
+                        errorType = 'negligible_error'
+                    elif len(diff_cube) == 1:
                         errorType = 'single_point'
-                        title = path2err + errorType + separator
                     elif isSameRow:
                         errorType = 'same_row'
-                        title = path2err + errorType + separator
                     elif bulletWake and (len(diff_cube) > 1):
                         errorType = 'bullet_wake'
-                        title = path2err + errorType + separator
                     elif shatteredGlass:
                         errorType = 'shattered_glass'
-                        title = path2err + errorType + separator
                     elif sameColumn:
                         errorType = 'same_column'
-                        title = path2err + errorType + separator
                     elif skipX:
                         errorType = 'skipX'
-                        title = path2err + errorType + separator
                     else:
                         errorType = 'undefined_error'
-                        title = path2err + errorType + separator
 
+                    title = path2err + errorType + separator
+                    writeOverall(pathToDirectory + experimentPath, errorType, tensor_name)
                     # print(tensor_name + ': '+errorType)
                     file = open(title + "tensors_" + errorType + ".txt", "a")
                     file.write(tensor_name + "\n")
