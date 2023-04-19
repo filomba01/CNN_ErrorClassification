@@ -15,7 +15,17 @@ CHANNEL = 2
 counter = 0
 
 #errors list
-error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column']
+error_classes = ['single_point','same_row','bullet_wake','shattered_glass','undefined_error','same_column','skipX']
+
+
+def checkSkipX(flatDiffs):
+    if size(flatDiffs) < 2:
+        return False
+    deltaX = flatDiffs[1]-flatDiffs[0]
+    for i in range(2,size(flatDiffs)):
+        if abs(flatDiffs[i]-flatDiffs[i-1]) != deltaX:
+            return False
+    return True
 
 # for per iterare nella cartella experimant name
 if len(os.path.abspath(__file__).split('/')) > 1:
@@ -139,6 +149,7 @@ for conv in os.listdir(directory):
                             if diff_cube[k][CHANNEL] != actualChannel:
                                 actualChannel = diff_cube[k][CHANNEL]
                                 nChannel += 1
+
                         # end for
                         print("final coordinates count: ")
                         print(CoordinatesMap)
@@ -162,6 +173,8 @@ for conv in os.listdir(directory):
                         if bulletWake:
                             shatteredGlass = False
 
+                    # skip x
+                    skipX = checkSkipX(flattDiffs)
                     # from the line command 1)Linux 2)Windows
                     # 1) tensor_name = argv[2].split('/')[-1].split('.')[0]
                     # 2) tensor_name = argv[2].split('.')[0].split("\\")[-1]
@@ -186,6 +199,9 @@ for conv in os.listdir(directory):
                         title = path2err + errorType + separator
                     elif sameColumn:
                         errorType = 'same_column'
+                        title = path2err + errorType + separator
+                    elif skipX:
+                        errorType = 'skipX'
                         title = path2err + errorType + separator
                     else:
                         errorType = 'undefined_error'
