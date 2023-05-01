@@ -1,11 +1,13 @@
 import numpy as np
 import os
 from numpy import size
+import json
 
 # initialize the dictonary that will be used as hashmap
 CoordinatesMap = {}
 # initialize the map for json file
 NErrorMap = {}
+CountErrorMap = {}
 
 # defines list's indexes
 ROW = 0
@@ -93,10 +95,17 @@ def create3DErrorIndexList(golden, faulty):
 def initializeNerrorMap(NErrorMap, numberOfErrors, error_classes):
     if numberOfErrors not in NErrorMap:
         NErrorMap[numberOfErrors] = {}
+        NErrorMap[numberOfErrors]["FF"] = {}
+        NErrorMap[numberOfErrors]["PF"] = {}
         for i in range(0, size(error_classes)):
-            NErrorMap[numberOfErrors][i] = 0
+            NErrorMap[numberOfErrors]["FF"][i] = 0
 
     return NErrorMap
+
+def initializeCountErrorMap(CountErrorMap,numberOfErrors):
+    if numberOfErrors not in CountErrorMap:
+        CountErrorMap[numberOfErrors] = [0,0]
+    return CountErrorMap
 
 def generateKeyMap(diff_cube,k):
     key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
@@ -117,11 +126,11 @@ def extractPercentage(NErrorMap):
     for i in NErrorMap:
 
         total4Row = 0
-        for j in NErrorMap[i]:
-            total4Row +=NErrorMap[i][j]
+        for j in NErrorMap[i]["FF"]:
+            total4Row +=NErrorMap[i]["FF"][j]
 
-        for j in NErrorMap[i]:
-            NErrorMap[i][j] = NErrorMap[i][j]/total4Row
+        for j in NErrorMap[i]["FF"]:
+            NErrorMap[i]["FF"][j] = NErrorMap[i]["FF"][j]/total4Row
 
     return NErrorMap
 
@@ -215,6 +224,7 @@ for conv in os.listdir(directory):
 
                     # initialise NError map
                     NErrorMap = initializeNerrorMap(NErrorMap,numberOfErrors,error_classes)
+                    CountErrorMap = initializeCountErrorMap(CountErrorMap,numberOfErrors)
 
 
                     # errors
@@ -307,7 +317,8 @@ for conv in os.listdir(directory):
                         errorType = 'undefined_error'
 
                     numberError = codeError(errorType)
-                    NErrorMap[numberOfErrors][numberError] += 1
+                    NErrorMap[numberOfErrors]["FF"][numberError] += 1
+                    CountErrorMap[numberOfErrors][0] += 1
 
                     title = path2err + errorType + separator
                     writeOverall(pathToDirectory + experimentPath, errorType, tensor_name)
@@ -318,3 +329,20 @@ for conv in os.listdir(directory):
             print("Tensors counted: ", counter)
             NErrorMap = extractPercentage(NErrorMap)
             print(NErrorMap)
+
+NErrorMap = dict(sorted(NErrorMap.items()))
+json_string_spatial = json.dumps(NErrorMap)
+title = os.path.abspath(__file__).replace(filename, '') + separator
+print(title)
+print(json_string_spatial)
+file = open(title + "statistics" + separator + experimentPath + "_spatial.json", "w")
+file.write(json_string_spatial)
+file.close()
+for key in CountErrorMap:
+    CountErrorMap[key][1] = float(CountErrorMap[key][0] / counter)
+CountErrorMap = dict(sorted(CountErrorMap.items()))
+json_string_count = json.dumps(CountErrorMap)
+file = open(title + "statistics" + separator + experimentPath + "_count.json", "w")
+file.write(json_string_count)
+file.close()
+print(CountErrorMap)
