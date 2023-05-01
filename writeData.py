@@ -1,7 +1,8 @@
 import os
 import csv
 
-error_classes = ['bullet_wake', 'same_column', 'same_row', 'shattered_glass', 'single_point', 'skipX','undefined_error','negligible_error']
+error_classes = ['single_point', 'same_row', 'bullet_wake', 'shattered_glass', 'undefined_error', 'same_column',
+                 'skipX', 'consecutive_errors', 'negligible_error']
 
 def addToErrorMap(nError,type_of_error,error_class,number_corrupted_tensors):
     if type_of_error not in nError:
@@ -37,8 +38,8 @@ def writeErrors(writer, nError, experiment):
 def create_csv(start_path, exp):
     nError = {}
     nErrorExperiment = {}
-    with open(exp + '.csv', 'w', newline='') as file:
-        writer = csv.writer(file, delimiter=';')
+    with open(exp + '.csv', 'w') as file:
+        writer = csv.writer(file, delimiter=',')
         writer.writerow(
             ['folder','type_of_injection'] + error_classes)
         # giro le raccolte di esperimenti
@@ -91,4 +92,4 @@ else:
 filename = separator + os.path.abspath(__file__).split(separator)[-1]
 startpath = os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes'
 experiment = input('insert experiments to analyze:')
-create_csv(startpath + separator + experiment, experiment)
+create_csv(startpath + separator + separator + experiment, "statistics"+separator+experiment)
