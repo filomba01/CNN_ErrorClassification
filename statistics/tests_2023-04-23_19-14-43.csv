@@ -1,4 +1,4 @@
-folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error
+folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error,total
 batchnorm_8,gp_rv,24,0,0,0,0,4,0,0,0,28
 ,,85%,0%,0%,0%,0%,14%,0%,0%,0%,100%
 batchnorm_8,fp32_fsb,47,0,0,0,0,1,0,0,0,48

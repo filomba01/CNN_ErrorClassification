@@ -1,4 +1,4 @@
-folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error
+folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error,total
 act_elu_5,fp32_fsb,1,0,0,0,0,0,0,0,0,1
 ,,100%,0%,0%,0%,0%,0%,0%,0%,0%,100%
 act_elu_5,gp_fsb,1,0,0,0,0,0,0,0,0,1

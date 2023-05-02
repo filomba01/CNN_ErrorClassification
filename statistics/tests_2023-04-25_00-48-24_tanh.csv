@@ -1,4 +1,4 @@
-folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error
+folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error,total
 act_tanh_13,gp_rv,4,0,0,0,0,0,0,0,0,4
 ,,100%,0%,0%,0%,0%,0%,0%,0%,0%,100%
 act_tanh_13,fp32_fsb,7,0,0,0,0,0,0,0,0,7

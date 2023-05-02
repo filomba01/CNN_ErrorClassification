@@ -1,4 +1,4 @@
-folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error
+folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error,total
 bias_add_24,gp_rv,8,0,1,0,0,0,0,0,0,9
 ,,88%,0%,11%,0%,0%,0%,0%,0%,0%,100%
 bias_add_24,fp32_fsb,35,0,0,0,0,0,0,0,0,35

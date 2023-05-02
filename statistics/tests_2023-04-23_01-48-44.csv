@@ -1,4 +1,4 @@
-folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error
+folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error,total
 conv_22,gp_rv,38,0,0,0,0,0,0,0,0,38
 ,,100%,0%,0%,0%,0%,0%,0%,0%,0%,100%
 conv_22,fp32_fsb,63,0,0,0,0,0,0,0,0,63

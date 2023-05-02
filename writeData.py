@@ -41,7 +41,7 @@ def create_csv(start_path, exp):
     with open(exp + '.csv', 'w') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(
-            ['folder','type_of_injection'] + error_classes)
+            ['folder','type_of_injection'] + error_classes+ ['total'])
         # giro le raccolte di esperimenti
         folder_path = os.path.join(start_path)
         # Check if it is a director

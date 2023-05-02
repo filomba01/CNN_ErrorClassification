@@ -1,4 +1,4 @@
-folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error
+folder,type_of_injection,single_point,same_row,bullet_wake,shattered_glass,undefined_error,same_column,skipX,consecutive_errors,negligible_error,total
 act_relu_8,gp_fsb,2,0,0,0,0,0,0,0,0,2
 ,,100%,0%,0%,0%,0%,0%,0%,0%,0%,100%
 act_relu_8,ld_rv,26,0,0,0,0,0,0,0,0,26
