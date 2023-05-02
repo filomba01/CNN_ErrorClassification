@@ -77,7 +77,6 @@ def create_csv(start_path, exp):
 
                         writeErrors(writer, nErrorExperiment, experiment)
 
-        writer.writerow('\n')
 
         writeErrors(writer, nError, 'result')
 
