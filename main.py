@@ -5,7 +5,6 @@ import json
 
 # initialize the dictonary that will be used as hashmap
 CoordinatesMap = {}
-
 # initialize the map for json file
 NErrorMap = {}
 CountErrorMap = {}
@@ -14,6 +13,8 @@ CountErrorMap = {}
 ROW = 0
 COLUMN = 1
 CHANNEL = 2
+
+MIN_PERC = 0.05
 # end def
 
 # counter of tensors
@@ -21,29 +22,39 @@ counter = 0
 
 # errors list
 error_classes = ['single_point', 'same_row', 'bullet_wake', 'shattered_glass', 'undefined_error', 'same_column',
-                 'skipX', 'consecutive_errors', 'negligible_error']
+                 'skip_x', 'consecutive_errors', 'negligible_error']
 
+# errors to compare list
+error_toCompare_list = ["skip_x"]
+
+
+# functions
 
 def checkConsecutiveErrors(flatDiffs):
     if size(flatDiffs) < 2:
         return False
-    deltaX = flatDiffs[1]-flatDiffs[0]
+    deltaX = flatDiffs[1] - flatDiffs[0]
     if deltaX != 1:
         return False
-    for i in range(2,size(flatDiffs)):
-        if abs(flatDiffs[i]-flatDiffs[i-1]) != deltaX:
+    for i in range(2, size(flatDiffs)):
+        if abs(flatDiffs[i] - flatDiffs[i - 1]) != deltaX:
             return False
     return True
 
-def checkSkipX(flatDiffs):
+
+def checkSkipX(flatDiffs, occurencyMap):
     if size(flatDiffs) < 2:
         return False
-    deltaX = flatDiffs[1]-flatDiffs[0]
+    deltaX = flatDiffs[1] - flatDiffs[0]
     if deltaX <= 1:
         return False
-    for i in range(2,size(flatDiffs)):
-        if abs(flatDiffs[i]-flatDiffs[i-1]) != deltaX:
+    for i in range(2, size(flatDiffs)):
+        if abs(flatDiffs[i] - flatDiffs[i - 1]) != deltaX:
             return False
+    if deltaX in occurencyMap:
+        occurencyMap[deltaX] += 1
+    else:
+        occurencyMap[deltaX] = 1
     return True
 
 
@@ -54,14 +65,13 @@ def writeOverall(path, errorType, tensor_name):
 
 
 def codeError(error_type):
-    for i in range(0,size(error_classes)-1):
+    for i in range(0, size(error_classes) - 1):
         if error_classes[i] == error_type:
             return i
     return 4
 
 
 def createResultDirectories(choosenTensorsF, separator, pathToDirectory):
-
     if not os.path.exists(pathToDirectory + experimentPath):
         os.mkdir(pathToDirectory + experimentPath + separator)
     if not os.path.exists(pathToDirectory + experimentPath + separator + choosenTestFolder):
@@ -76,16 +86,25 @@ def createResultDirectories(choosenTensorsF, separator, pathToDirectory):
 
     return pathToDirectories
 
-# for per iterare nella cartella experimant name
-if len(os.path.abspath(__file__).split('/')) > 1:
-    separator = '/'
-else:
-    separator = '\\'
-experimentPath = input("Insert the folder of the experiment: ")
-filename = separator + os.path.abspath(__file__).split(separator)[-1]
-os.path.abspath(__file__).replace(filename, '')
-directory = os.path.abspath(__file__).replace(filename,
-                                              '') + separator + 'tensors_corrupted' + separator + experimentPath
+
+def writeSpatialJson(NErrorMap, pathtoFile, experimentName):
+    json_string_spatial = json.dumps(NErrorMap)
+    title = os.path.abspath(__file__).replace(filename, '') + separator
+    print(title)
+    print(json_string_spatial)
+    file = open(pathtoFile + experimentName + "_spatial.json", "w")
+    file.write(json_string_spatial)
+    file.close()
+
+
+def writeCountJson(CountErrorMap, pathtoFile, experimentName):
+    for key in CountErrorMap:
+        CountErrorMap[key][1] = float(CountErrorMap[key][0] / counter)
+    CountErrorMap = dict(sorted(CountErrorMap.items()))
+    json_string_count = json.dumps(CountErrorMap)
+    file = open(pathtoFile + experimentName + "_count.json", "w")
+    file.write(json_string_count)
+    file.close()
 
 
 def createFlatErrorIndexList(ravelGolden, ravelFaulty):
@@ -106,22 +125,25 @@ def create3DErrorIndexList(golden, faulty):
     return diff_cube
 
 
-def initializeNerrorMap(NErrorMap, numberOfErrors, error_classes):
+def initializeNerrorMap(NErrorMap, numberOfErrors, error_classes, error_toCompare_list):
     if numberOfErrors not in NErrorMap:
         NErrorMap[numberOfErrors] = {}
         NErrorMap[numberOfErrors]["FF"] = {}
         NErrorMap[numberOfErrors]["PF"] = {}
         for i in range(0, size(error_classes)):
-            NErrorMap[numberOfErrors]["FF"][i] = 0
-
+            NErrorMap[numberOfErrors]["FF"][error_classes[i]] = 0
+        for i in range(0, size(error_toCompare_list)):
+            NErrorMap[numberOfErrors]["PF"][error_toCompare_list[i]] = {}
     return NErrorMap
 
-def initializeCountErrorMap(CountErrorMap,numberOfErrors):
+
+def initializeCountErrorMap(CountErrorMap, numberOfErrors):
     if numberOfErrors not in CountErrorMap:
-        CountErrorMap[numberOfErrors] = [0,0]
+        CountErrorMap[numberOfErrors] = [0, 0]
     return CountErrorMap
 
-def generateKeyMap(diff_cube,k):
+
+def generateKeyMap(diff_cube, k):
     key = ''.join(str(diff_cube[k][x]) + ',' for x in range(0, len(diff_cube[k]) - 1))
     key = key.rstrip(key[-1])
 
@@ -131,28 +153,81 @@ def generateKeyMap(diff_cube,k):
 def initialiazeCoordinateMap(CoordinatesMap, numberOfErrors, diff_cube):
     CoordinatesMap.clear()
     for k in range(0, numberOfErrors):
-        key = generateKeyMap(diff_cube,k)
+        key = generateKeyMap(diff_cube, k)
         CoordinatesMap[key] = 0
     return CoordinatesMap
 
 
 def extractPercentage(NErrorMap):
+    keysToDelete = []
+
     for i in NErrorMap:
 
         total4Row = 0
         for j in NErrorMap[i]["FF"]:
-            total4Row +=NErrorMap[i]["FF"][j]
+            total4Row += NErrorMap[i]["FF"][j]
 
         for j in NErrorMap[i]["FF"]:
-            NErrorMap[i]["FF"][j] = NErrorMap[i]["FF"][j]/total4Row
+            NErrorMap[i]["FF"][j] = NErrorMap[i]["FF"][j] / total4Row
+
+        # if not empty map...
+        if bool(NErrorMap[i]["PF"]["skip_x"]):
+            # skip_x PF writing
+            total4Row = 0
+            for j in NErrorMap[i]["PF"]["skip_x"]:
+                if j != "MAX" and j != "RANDOM":
+                    total4Row += NErrorMap[i]["PF"]["skip_x"][j]
+
+            overallPercNoRandom = 0.0
+
+            # get the maxkey
+            maxElem = 0
+            for key in NErrorMap[i]["PF"]["skip_x"]:
+                if isinstance(key, int):
+                    maxElem = key
+                    break
+
+            for k in NErrorMap[i]["PF"]["skip_x"]:
+                if type(k) == int and int(k) > maxElem:
+                    maxElem = int(k)
+
+            NErrorMap[i]["PF"]["skip_x"]["MAX"] = maxElem
+
+            for j in NErrorMap[i]["PF"]["skip_x"]:
+                if j != "MAX" and j != "RANDOM":
+                    NErrorMap[i]["PF"]["skip_x"][j] = NErrorMap[i]["PF"]["skip_x"][j] / total4Row
+                    if int(NErrorMap[i]["PF"]["skip_x"][j]) <= MIN_PERC:
+                        keysToDelete.append(j)
+                    else:
+                        overallPercNoRandom += NErrorMap[i]["PF"]["skip_x"][j]
+
+            NErrorMap[i]["PF"]["skip_x"]["RANDOM"] = 1.0 - overallPercNoRandom
+
+            for j in keysToDelete:
+                NErrorMap[i]["PF"]["skip_x"].pop(j)
+            keysToDelete.clear()
+
+
 
     return NErrorMap
 
 
+# MAIN
+
+if len(os.path.abspath(__file__).split('/')) > 1:
+    separator = '/'
+else:
+    separator = '\\'
+experimentPath = input("Insert the folder of the experiment: ")
+filename = separator + os.path.abspath(__file__).split(separator)[-1]
+os.path.abspath(__file__).replace(filename, '')
+directory = os.path.abspath(__file__).replace(filename,
+                                              '') + separator + 'tensors_corrupted' + separator + experimentPath
+
 for conv in os.listdir(directory):
     f = os.path.join(directory, conv)
     for tensor in os.listdir(f):
-        if not tensor.endswith(".npy") and not tensor.endswith(".md") and not tensor.endswith(".json"):
+        if not tensor.endswith(".npy") and not tensor.endswith(".md"):
             print(tensor)
             path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'
             path = path + separator + experimentPath
@@ -180,22 +255,19 @@ for conv in os.listdir(directory):
             pathToDirectory = os.path.abspath(__file__).replace(filename, '') + separator + 'error_classes' + separator
             pathToDirectories = createResultDirectories(choosenTensorsF, separator, pathToDirectory)
 
-
-
-
+            # iterate over all the faulties
             for file in os.listdir():
                 if file.endswith(".npy"):
                     counter += 1
                     file_path = path + separator + choosenTensorsF + separator + file
-                    # print(file_path)
                     faulty = np.load(file_path)[0, ...]
+
                     # flattered version of the faulty
                     ravelFaulty = np.ravel(faulty)
 
                     print(faulty.shape)
                     if toInvert:
                         faulty = np.transpose(faulty, (1, 2, 0))
-                        # faulty = np.reshape(faulty_transposed, (faulty.shape[2], faulty.shape[1], faulty.shape[0]))
                         print(faulty.shape)
 
                     # variables for classification
@@ -206,20 +278,16 @@ for conv in os.listdir(directory):
                     sameColumn = True
                     NegligibleError = False
 
-
-
                     # diff cube generation
 
                     flattDiffs = createFlatErrorIndexList(ravelGolden, ravelFaulty)
-                    diff_cube =create3DErrorIndexList(golden, faulty)
+                    diff_cube = create3DErrorIndexList(golden, faulty)
 
                     # gets the number of errors
                     numberOfErrors = size(flattDiffs)
 
                     if numberOfErrors == 0:
                         NegligibleError = True
-
-
 
                     # initialize the Coordinate map
                     CoordinatesMap = initialiazeCoordinateMap(CoordinatesMap, numberOfErrors, diff_cube)
@@ -237,9 +305,8 @@ for conv in os.listdir(directory):
                     print(diff_cube)
 
                     # initialise NError map
-                    NErrorMap = initializeNerrorMap(NErrorMap,numberOfErrors,error_classes)
-                    CountErrorMap = initializeCountErrorMap(CountErrorMap,numberOfErrors)
-
+                    NErrorMap = initializeNerrorMap(NErrorMap, numberOfErrors, error_classes, error_toCompare_list)
+                    CountErrorMap = initializeCountErrorMap(CountErrorMap, numberOfErrors)
 
                     # errors
                     if numberOfErrors > 1 and not NegligibleError:
@@ -256,7 +323,7 @@ for conv in os.listdir(directory):
                             # super pattern
 
                             # handle key creation, without assign the channel
-                            key = generateKeyMap(diff_cube,k)
+                            key = generateKeyMap(diff_cube, k)
                             CoordinatesMap[key] += 1
 
                             #  common conditions
@@ -301,8 +368,13 @@ for conv in os.listdir(directory):
                             shatteredGlass = False
 
                     # skip x
-                    skipX = checkSkipX(flattDiffs)
-                    consecutiveErrors = checkConsecutiveErrors(flattDiffs)
+                    if bulletWake or sameColumn or isSameRow or shatteredGlass:
+                        skipX = False
+                        consecutiveErrors = False
+                    else:
+                        skipX = checkSkipX(flattDiffs, NErrorMap[numberOfErrors]["PF"]["skip_x"])
+                        consecutiveErrors = checkConsecutiveErrors(flattDiffs)
+
                     # from the line command 1)Linux 2)Windows
                     # 1) tensor_name = argv[2].split('/')[-1].split('.')[0]
                     # 2) tensor_name = argv[2].split('.')[0].split("\\")[-1]
@@ -327,18 +399,19 @@ for conv in os.listdir(directory):
                     elif sameColumn:
                         errorType = 'same_column'
                     elif skipX:
-                        errorType = 'skipX'
+                        errorType = 'skip_x'
                     elif consecutiveErrors:
                         errorType = 'consecutive_errors'
                     else:
                         errorType = 'undefined_error'
 
-                    numberError = codeError(errorType)
+                    numberError = errorType
                     NErrorMap[numberOfErrors]["FF"][numberError] += 1
                     CountErrorMap[numberOfErrors][0] += 1
 
                     title = path2err + errorType + separator
                     writeOverall(pathToDirectory + experimentPath, errorType, tensor_name)
+
                     # print(tensor_name + ': '+errorType)
                     file = open(title + "tensors_" + errorType + ".txt", "a")
                     file.write(tensor_name + "\n")
@@ -346,20 +419,10 @@ for conv in os.listdir(directory):
             print("Tensors counted: ", counter)
             NErrorMap = extractPercentage(NErrorMap)
             print(NErrorMap)
-
 NErrorMap = dict(sorted(NErrorMap.items()))
-json_string_spatial = json.dumps(NErrorMap)
-title = os.path.abspath(__file__).replace(filename, '') + separator
-print(title)
-print(json_string_spatial)
-file = open(title + "statistics" + separator + experimentPath + "_spatial.json", "w")
-file.write(json_string_spatial)
-file.close()
-for key in CountErrorMap:
-    CountErrorMap[key][1] = float(CountErrorMap[key][0] / counter)
-CountErrorMap = dict(sorted(CountErrorMap.items()))
-json_string_count = json.dumps(CountErrorMap)
-file = open(title + "statistics" + separator + experimentPath + "_count.json", "w")
-file.write(json_string_count)
-file.close()
-print(CountErrorMap)
+
+filename = separator + os.path.abspath(__file__).split(separator)[-1]
+pathtoStatistics = os.path.abspath(__file__).replace(filename, '') + separator + "statistics" + separator
+
+writeSpatialJson(NErrorMap, pathtoStatistics, experimentPath)
+writeCountJson(CountErrorMap, pathtoStatistics, experimentPath)
