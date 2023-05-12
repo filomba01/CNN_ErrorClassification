@@ -1,18 +1,21 @@
 import json
 import os
+from sys import argv
+
+# input sample: programName.py num folder1 folder2... folderN p1 p2... pn
 
 # chose the number of tensor to compare
-num = int(input("Enter the number of folder to compare: "))
+num = int(argv[1])
 
 # chose the name of the folders to compare
 compareList = []
-for i in range(0, num):
-    compareList.append(input("Enter folder " + str(i + 1) + ": "))
+for i in range(2, num + 2):
+    compareList.append(argv[i])
 
 # chose a probability for each folder
-probabilityList = []
-for i in range(0, num):
-    probabilityList.append(input("probability of " + compareList[i] + ": "))
+weightsList = []
+for i in range(num + 2, 2 * num + 2):
+    weightsList.append(argv[i])
 
 # path to the files and creation of the original dictionaries
 if len(os.path.abspath(__file__).split('/')) > 1:
@@ -32,17 +35,15 @@ for i in range(0, num):
     with open(filePath, 'r') as f:
         data = json.load(f)
     map = {}
-    for key1, value1 in data.items():
+    for numberOfError, values in data.items():
         map1 = {}
-        for key2, value2 in value1.items():
+        for FType, statisticsList in values.items():
             map2 = {}
-            for key3, value3 in value2.items():
-                map2[key3] = value3
-            map1[key2] = map2
-        map[key1] = map1
+            for errors, probabilities in statisticsList.items():
+                map2[errors] = probabilities
+            map1[FType] = map2
+        map[numberOfError] = map1
     mapList.append(map)
-
-# print(mapList)
 
 # comparing the dictionaries
 keyList = []
@@ -51,10 +52,13 @@ tmpMap = {}
 counterMap = 0
 # entire dictionary
 for i in mapList:
-    i_probability = float(probabilityList[counterMap])
+    i_probability = float(weightsList[counterMap])
     counterMap += 1
-    # number of errors
+    # number of errors "0", "2"...
     for j in i.keys():
-        # type of errors
-        for k in i[j]['FF'].keys():
-            tmpMap[k] = [i[j]['FF'][k] * i_probability]
+        if j not in keyList:
+            keyList.append(j)
+            # type of errors "single_point"...
+            for k in i[j]['FF'].keys():
+                tmpMap[k] = [i[j]['FF'][k] * i_probability]
+print(tmpMap)
