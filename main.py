@@ -227,7 +227,7 @@ directory = os.path.abspath(__file__).replace(filename,
 for conv in os.listdir(directory):
     f = os.path.join(directory, conv)
     for tensor in os.listdir(f):
-        if not tensor.endswith(".npy") and not tensor.endswith(".md"):
+        if not tensor.endswith(".npy") and not tensor.endswith(".md") and not tensor.endswith(".json"):
             print(tensor)
             path = os.path.abspath(__file__).replace(filename, '') + separator + 'tensors_corrupted'
             path = path + separator + experimentPath

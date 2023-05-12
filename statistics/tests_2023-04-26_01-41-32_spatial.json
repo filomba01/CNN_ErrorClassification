@@ -1,100 +1,122 @@
 {
   "0": {
     "FF": {
-      "0": 0.0,
-      "1": 0.0,
-      "2": 0.0,
-      "3": 0.0,
-      "4": 1.0,
-      "5": 0.0,
-      "6": 0.0,
-      "7": 0.0,
-      "8": 0.0
+      "single_point": 0.0,
+      "same_row": 0.0,
+      "bullet_wake": 0.0,
+      "shattered_glass": 0.0,
+      "undefined_error": 0.0,
+      "same_column": 0.0,
+      "skip_x": 0.0,
+      "consecutive_errors": 0.0,
+      "negligible_error": 1.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {}
+    }
   },
   "1": {
     "FF": {
-      "0": 1.0,
-      "1": 0.0,
-      "2": 0.0,
-      "3": 0.0,
-      "4": 0.0,
-      "5": 0.0,
-      "6": 0.0,
-      "7": 0.0,
-      "8": 0.0
+      "single_point": 1.0,
+      "same_row": 0.0,
+      "bullet_wake": 0.0,
+      "shattered_glass": 0.0,
+      "undefined_error": 0.0,
+      "same_column": 0.0,
+      "skip_x": 0.0,
+      "consecutive_errors": 0.0,
+      "negligible_error": 0.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {}
+    }
   },
   "2": {
     "FF": {
-      "0": 0.0,
-      "1": 1.8335666596394294e-05,
-      "2": 0.9167357238314635,
-      "3": 0.0,
-      "4": 0.0,
-      "5": 5.4762454495828724e-05,
-      "6": 0.08319117804744429,
-      "7": 0.0,
-      "8": 0.0
+      "single_point": 0.0,
+      "same_row": 1.8335666596394294e-05,
+      "bullet_wake": 0.9167357238314635,
+      "shattered_glass": 0.0,
+      "undefined_error": 0.0,
+      "same_column": 5.4762454495828724e-05,
+      "skip_x": 0.08319117804744429,
+      "consecutive_errors": 0.0,
+      "negligible_error": 0.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {
+        "MAX": 1024,
+        "RANDOM": 0.0,
+        "1024": 1.0
+      }
+    }
   },
   "3": {
     "FF": {
-      "0": 0.0,
-      "1": 0.0,
-      "2": 0.0,
-      "3": 0.0,
-      "4": 1.0,
-      "5": 0.0,
-      "6": 0.0,
-      "7": 0.0,
-      "8": 0.0
+      "single_point": 0.0,
+      "same_row": 0.0,
+      "bullet_wake": 0.0,
+      "shattered_glass": 0.0,
+      "undefined_error": 1.0,
+      "same_column": 0.0,
+      "skip_x": 0.0,
+      "consecutive_errors": 0.0,
+      "negligible_error": 0.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {}
+    }
   },
   "4": {
     "FF": {
-      "0": 0.0,
-      "1": 0.0,
-      "2": 0.3541666666666667,
-      "3": 0.0,
-      "4": 0.6458333333333334,
-      "5": 0.0,
-      "6": 0.0,
-      "7": 0.0,
-      "8": 0.0
+      "single_point": 0.0,
+      "same_row": 0.0,
+      "bullet_wake": 0.3541666666666667,
+      "shattered_glass": 0.0,
+      "undefined_error": 0.6458333333333334,
+      "same_column": 0.0,
+      "skip_x": 0.0,
+      "consecutive_errors": 0.0,
+      "negligible_error": 0.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {}
+    }
   },
   "147": {
     "FF": {
-      "0": 0.0,
-      "1": 0.0,
-      "2": 0.0,
-      "3": 0.0,
-      "4": 0.0,
-      "5": 0.0,
-      "6": 1.0,
-      "7": 0.0,
-      "8": 0.0
+      "single_point": 0.0,
+      "same_row": 0.0,
+      "bullet_wake": 0.0,
+      "shattered_glass": 0.0,
+      "undefined_error": 0.0,
+      "same_column": 0.0,
+      "skip_x": 1.0,
+      "consecutive_errors": 0.0,
+      "negligible_error": 0.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {
+        "8": 1.0,
+        "MAX": 8,
+        "RANDOM": 0.0
+      }
+    }
   },
   "343": {
     "FF": {
-      "0": 0.0,
-      "1": 0.0,
-      "2": 0.0,
-      "3": 0.0,
-      "4": 0.0,
-      "5": 0.0,
-      "6": 0.0,
-      "7": 1.0,
-      "8": 0.0
+      "single_point": 0.0,
+      "same_row": 0.0,
+      "bullet_wake": 0.0,
+      "shattered_glass": 0.0,
+      "undefined_error": 0.0,
+      "same_column": 0.0,
+      "skip_x": 0.0,
+      "consecutive_errors": 1.0,
+      "negligible_error": 0.0
     },
-    "PF": {}
+    "PF": {
+      "skip_x": {}
+    }
   }
 }
