@@ -220,7 +220,6 @@ else:
     separator = '\\'
 experimentPath = input("Insert the folder of the experiment: ")
 filename = separator + os.path.abspath(__file__).split(separator)[-1]
-os.path.abspath(__file__).replace(filename, '')
 directory = os.path.abspath(__file__).replace(filename,
                                               '') + separator + 'tensors_corrupted' + separator + experimentPath
 
