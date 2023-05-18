@@ -18,13 +18,18 @@ def initializeKey(finalSpatial, key):
     return finalSpatial
 
 
+def getPathToDirectory(separator):
+    filename = separator + os.path.abspath(__file__).split(separator)[-1]
+    return os.path.abspath(__file__).replace(filename, '')
+
+
 # input sample: programName.py num folder1 folder2... folderN p1 p2... pn
 
 # chose the number of tensor to compare
 if len(argv) < 4:
     print("ERROR! not enough argument provided!")
     exit(0)
-#if not isinstance(argv[1], int):
+# if not isinstance(argv[1], int):
 #    print("ERROR! you should provide the number of the elements as first parameter!")
 #    exit(0)
 
@@ -51,23 +56,22 @@ separator = getRightSeparator()
 # FType -> FF, FP
 
 mapList = []
+
 for i in range(0, num):
-    filename = separator + os.path.abspath(__file__).split(separator)[-1]
-    directory = os.path.abspath(__file__).replace(filename,'')
-    filePath = directory+separator+compareList[i]
+    directory = getPathToDirectory(separator)
+    filePath = directory + separator + compareList[i]
     # turn json files back into dictionary
     with open(filePath, 'r') as f:
         mapList.append(json.load(f))
 
 # comparing the dictionaries
-alreadySeenKeys = {"FF": [], "PF": []}
+alreadySeenKeys = {}
 
 finalSpatial = {}
 # entire dictionary
 for i_map in range(0, len(mapList) - 1):
     statsMap = mapList[i_map]
     i_weight = float(weightsList[i_map])
-    print(statsMap)
     # number of errors "0", "2"...
     for nErrorKey, nErrorMap in statsMap.items():
 
@@ -76,42 +80,44 @@ for i_map in range(0, len(mapList) - 1):
             finalSpatial = initializeKey(finalSpatial, nErrorKey)
             finalSpatial[nErrorKey] = initializeKey(finalSpatial[nErrorKey], "FF")
             finalSpatial[nErrorKey] = initializeKey(finalSpatial[nErrorKey], "PF")
-
+        # initialize already seen keys
+        if nErrorKey not in alreadySeenKeys:
+            alreadySeenKeys[nErrorKey] = {}
+            alreadySeenKeys[nErrorKey]["FF"] = []
+            alreadySeenKeys[nErrorKey]["PF"] = []
         # FF map iterations
         for errorPatternKey, probability in nErrorMap["FF"].items():
-            if errorPatternKey not in alreadySeenKeys["FF"]:
-                nMapSharingKey = 1
+            if errorPatternKey not in alreadySeenKeys[nErrorKey]["FF"]:
+                nMapSharingKey = i_weight
                 probSum = float(i_weight) * float(probability)
 
                 for k in range(i_map + 1, len(mapList)):
                     if nErrorKey in mapList[k].keys():
                         if errorPatternKey in mapList[k][nErrorKey]["FF"]:
-                            nMapSharingKey += 1
+                            nMapSharingKey += float(weightsList[k])
                             probSum += float(weightsList[k]) * float(mapList[k][nErrorKey]["FF"][errorPatternKey])
 
                 if errorPatternKey not in finalSpatial[nErrorKey]["FF"]:
                     finalSpatial[nErrorKey]["FF"] = initializeKey(finalSpatial[nErrorKey]["FF"], errorPatternKey)
                 finalSpatial[nErrorKey]["FF"][errorPatternKey] = float(probSum) / float(nMapSharingKey)
-
-            alreadySeenKeys["FF"].append(errorPatternKey)
+                print(finalSpatial[nErrorKey]["FF"][errorPatternKey])
+            alreadySeenKeys[nErrorKey]["FF"].append(errorPatternKey)
 
         # PF map iteration
         for key, probability in nErrorMap["PF"].items():
-
-            if key not in alreadySeenKeys["PF"]:
+            if key not in alreadySeenKeys[key]["PF"]:
                 if key != "MAX":
-                    nMapSharingKey = 1
+                    nMapSharingKey = i_weight
                     probSum = i_weight * probability
                     for k in range(i_map + 1, len(mapList)):
                         if key in mapList[k][nErrorKey]:
-                            nMapSharingKey += 1
+                            nMapSharingKey += float(weightsList[k])
                             probSum += float(weightsList[k]) * float(mapList[k][nErrorKey][key])
 
                     if key not in finalSpatial[nErrorKey]["FF"]:
-                        finalSpatial[nErrorKey]["PF"], = initializeKey(finalSpatial[nErrorKey]["PF"], key)
+                        finalSpatial[nErrorKey]["PF"] = initializeKey(finalSpatial[nErrorKey]["PF"], key)
 
                     finalSpatial[nErrorKey]["PF"][key] = float(probSum) / float(nMapSharingKey)
-
                 else:
                     # in this case probability values describe the MAX value and not a probability
                     finalSpatial[nErrorKey]["PF"]["MAX"] = probability
@@ -120,6 +126,9 @@ for i_map in range(0, len(mapList) - 1):
                             if finalSpatial[nErrorKey]["PF"]["MAX"] < mapList[k][nErrorKey]["PF"]["MAX"]:
                                 finalSpatial[nErrorKey]["PF"]["MAX"] = mapList[k][nErrorKey]["PF"]["MAX"]
 
-                alreadySeenKeys["PF"].append(key)
+                alreadySeenKeys[key]["PF"].append(key)
 
-print(finalSpatial)
+# Save results
+file = open(getPathToDirectory(separator)+separator+"results" + separator + "merged_spatial.json", "w")
+file.write(json.dumps(finalSpatial))
+file.close()
