@@ -75,12 +75,12 @@ Here's an example:
 ```
     [
         {
-            "file": relative/path/to/the/experiment1
+            "file": "relative/path/to/the/experiment1",
             "weigth": 0.8
         },
         {
-                "file": relative/path/to/the/experiment2
-                "weigth": 0.2
+            "file": "relative/path/to/the/experiment2",
+            "weigth": 0.2
         }
     ]
 ```
