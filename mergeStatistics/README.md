@@ -68,20 +68,26 @@ experiment and 0.33 to the second.
 ### Usage
 
 This script is structured to receive as arguments a precise sequence of data.
+You just have to write a json file that contains the experiments to merge and their relative weights.
+You have to set the relative path of the experiments and the weights must be a decimal number from 0 to 1.
+Here's an example:
 
-* First insert the number of files you want to analise.
+```
+    [
+        {
+            "file": relative/path/to/the/experiment1
+            "weigth": 0.8
+        },
+        {
+                "file": relative/path/to/the/experiment2
+                "weigth": 0.2
+        }
+    ]
+```
+Remember that the sum of the weights must be equals to one.
 
-* Then you have to choose the json files to analise that contains the results of CLASSES:
-  (all the paths are threaten as relatives)
-    ```
-    path/to/the/name_of_the_experiment_1_spatial.json path/to/the/name_of_the_experiment_2_spatial.json
-    ```
-* Now you can assign the weights.
-  ```
-  path/to/the/name_of_the_experiment_1_spatial.json path/to/the/name_of_the_experiment_2_spatial.json weight_1 weight_2
-  ```
-* Finally just run the code.
-
-The script will generate a unique json file that contains all the results merged you can find in the directory _results_.
-
-
+Now you can insert the line to run from terminal l[README.md](README.md)ike this:
+```
+    python mergeStatistics.py jsonfile.json
+```
+Finally just run the code.
