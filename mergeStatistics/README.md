@@ -86,7 +86,7 @@ Here's an example:
 ```
 Remember that the sum of the weights must be equals to one.
 
-Now you can insert the line to run from terminal l[README.md](README.md)ike this:
+Now you can insert the line to run from terminal like this:
 ```
     python mergeStatistics.py jsonfile.json
 ```
