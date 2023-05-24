@@ -18,51 +18,23 @@ def initializeKey(finalSpatial, key):
     return finalSpatial
 
 
-def getPathToDirectory(separator):
-    filename = separator + os.path.abspath(__file__).split(separator)[-1]
-    return os.path.abspath(__file__).replace(filename, '')
+def getAbsolutePath(relative_path):
+    return os.path.abspath(os.path.join(os.getcwd(), relative_path))
 
-
-# input sample: programName.py num folder1 folder2... folderN p1 p2... pn
-
-# chose the number of tensor to compare
-if len(argv) < 4:
-    print("ERROR! not enough argument provided!")
-    exit(0)
-# if not isinstance(argv[1], int):
-#    print("ERROR! you should provide the number of the elements as first parameter!")
-#    exit(0)
-
-num = int(argv[1])
-
-# verify correct args
-if len(argv) != (num * 2 + 2):
-    print("ERROR! the numbers of arguments provided is not correct! provided:" + str(len(argv) - 1) + " needed:" + str(
-        (num * 2 + 2)))
-
-# chose the name of the folders to compare
-compareList = []
-for i in range(2, num + 2):
-    compareList.append(argv[i])
-
-# chose a probability for each folder
-weightsList = []
-for i in range(num + 2, 2 * num + 2):
-    weightsList.append(argv[i])
 
 # path to the files and creation of the original dictionaries
 separator = getRightSeparator()
-# spatial merging
-# FType -> FF, FP
-
+with open(getAbsolutePath(argv[1]), 'r') as f:
+    inputMap = json.load(f)
+# chose the name of the folders to compare
 mapList = []
-
-for i in range(0, num):
-    directory = getPathToDirectory(separator)
-    filePath = directory + separator + compareList[i]
-    # turn json files back into dictionary
-    with open(filePath, 'r') as f:
+# chose a probability for each folder
+weightsList = []
+for i in range(0, len(inputMap)):
+    with open(getAbsolutePath(inputMap[i]["file"]), 'r') as f:
         mapList.append(json.load(f))
+    weightsList.append(inputMap[i]["weight"])
+
 
 # comparing the dictionaries
 alreadySeenKeys = {}
@@ -100,7 +72,6 @@ for i_map in range(0, len(mapList) - 1):
                 if errorPatternKey not in finalSpatial[nErrorKey]["FF"]:
                     finalSpatial[nErrorKey]["FF"] = initializeKey(finalSpatial[nErrorKey]["FF"], errorPatternKey)
                 finalSpatial[nErrorKey]["FF"][errorPatternKey] = float(probSum) / float(nMapSharingKey)
-                print(finalSpatial[nErrorKey]["FF"][errorPatternKey])
             alreadySeenKeys[nErrorKey]["FF"].append(errorPatternKey)
 
         # PF map iteration
@@ -129,6 +100,8 @@ for i_map in range(0, len(mapList) - 1):
                 alreadySeenKeys[key]["PF"].append(key)
 
 # Save results
-file = open(getPathToDirectory(separator)+separator+"results" + separator + "merged_spatial.json", "w")
+file = open(getAbsolutePath( "results" + separator + "merged_spatial.json"), "w")
 file.write(json.dumps(finalSpatial))
 file.close()
+
+print("merge finished correctly!")
