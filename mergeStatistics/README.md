@@ -75,18 +75,18 @@ Here's an example:
 ```
     [
         {
-            "file": relative/path/to/the/experiment1
+            "file": "relative/path/to/the/experiment1",
             "weigth": 0.8
         },
         {
-                "file": relative/path/to/the/experiment2
-                "weigth": 0.2
+            "file": "relative/path/to/the/experiment2",
+            "weigth": 0.2
         }
     ]
 ```
 Remember that the sum of the weights must be equals to one.
 
-Now you can insert the line to run from terminal l[README.md](README.md)ike this:
+Now you can insert the line to run from terminal like this:
 ```
     python mergeStatistics.py jsonfile.json
 ```
