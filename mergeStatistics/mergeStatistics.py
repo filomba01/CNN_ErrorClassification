@@ -30,12 +30,16 @@ with open(getAbsolutePath(argv[1]), 'r') as f:
 mapList = []
 # chose a probability for each folder
 weightsList = []
+checkWeight = 0.0
 for i in range(0, len(inputMap)):
     with open(getAbsolutePath(inputMap[i]["file"]), 'r') as f:
         mapList.append(json.load(f))
     weightsList.append(inputMap[i]["weight"])
+    checkWeight+=weightsList[i]
 
-
+if checkWeight !=  1:
+    print("Error! sum of the weights must be one!")
+    exit(-1)
 # comparing the dictionaries
 alreadySeenKeys = {}
 
