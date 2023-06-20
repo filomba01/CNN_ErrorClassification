@@ -11,7 +11,7 @@ The repository contains two python scripts:
     * plotTensor.py
     * writeData.py
 * compareStatistics.py
-*mergeStatistics.py
+* mergeStatistics.py
 ## main
 Analysis starts with the comparison between the corrupted tensor matrix and the golden one, the _diff\_cube_ result
 represent the field of the matrix where an error occurred because of the corrupted tensor injection in the CNN, the
