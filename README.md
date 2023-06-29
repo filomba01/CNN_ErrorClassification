@@ -11,7 +11,7 @@ The repository contains two python scripts:
     * plotTensor.py
     * writeData.py
 * compareStatistics.py
-
+* mergeStatistics.py
 ## main
 Analysis starts with the comparison between the corrupted tensor matrix and the golden one, the _diff\_cube_ result
 represent the field of the matrix where an error occurred because of the corrupted tensor injection in the CNN, the
@@ -30,6 +30,20 @@ The currently error classes in analysis are:
 * **skip_x** : all the errors emerge every "x" blocks.
 * **consecutive_errors** : the errors emerge consecutively every block "n" times.
 * **negligible_error** : error so small as to be negligible.
+### Installation
+To install the script it is necessary to clone the repository.
+```
+git clone https://github.com/filomba01/CNN_ErrorClassification.git
+```
+### Usage
+To collect all the information of a injection just run the main.py, you will need to provide a directory that contains the corrupted tensors to be analyzed in a specific format the results will be saved in the error_classes directory, in the statistics directory it can be found the spatial and the count model of the errors.
+```
+python main.py
+```
+If general statistics are needed, you can run the writeData.py script, which generates a csv file containing all the statistics, an example can be found in the statistics/ directory.
+```
+python writeData.py
+```
 
 ### approach
 As it can be seen in the code, all the error classes are supposed to be true at the beginning, the approach of this
@@ -66,18 +80,8 @@ The result of the classification can be displayed using various approaches:
 * writeData.py
   here is generated a csv file with the percentual of all the errors.
 
-### file json
-In main.py are generated two file json:
-
-* _spatial:
-  In this file are collected the statistics of the experiment in a specific manner.
-  The structure is composed by three nested dictionaries.
-  The first dictionary contains as key the occurrences of the errors.
-  The second contains as key the type of statistic and as value the respective stats.
-  The third contains as key the type of error and as value the percentual of its occurrence.
-* _count:
-  Contains as key the occurrences of error and as values the effective number of tensors that has "n" errors and the
-  probability of it to happen.
+### Models
+In main.py are generated two models that represent the distribution of the errors, the spatial model and the count model. More accourate information about this can be found on [Classes](https://github.com/d4de/classes) 
 
 ## compareStatistics
 The purpose of this script is to compare the result of more experiments.
